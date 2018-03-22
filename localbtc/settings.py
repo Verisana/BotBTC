@@ -35,7 +35,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
-ROOT_URLCONF = 'localbt.urls'
+ROOT_URLCONF = 'localbtc.urls'
 
 TEMPLATES = [
     {
