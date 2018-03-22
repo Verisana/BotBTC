@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Sign up{% endblock %}
+
+
+{% block nav_baractive_register %}active{% endblock %}
+
+
+{% block content %}
+    <div class="starter-template text-left">
+        <h1 class="bold reddish"><b>Sign up</b></h1>
+        <div class="container text-left">
+            <form action="" method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                  <h5>
+                    {{ field.label_tag }}<br>
+                    {{ field }}
+                    {% for error in field.errors %}
+                      <p style="color: red">{{ error }}</p>
+                    {% endfor %}
+                  </h5>
+                {% endfor %}
+                <input type="submit" class="btn btn-default btn-lg" value="Sign up" />
+            </form>        
+	</div>
+    </div>
+{% endblock %}

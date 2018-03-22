@@ -9,6 +9,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'profiles.apps.ProfilesConfig',
+    'bot.apps.BotConfig',
     'django_extensions',
     'debug_toolbar',
     'django.contrib.admin',
@@ -32,7 +34,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'localbtc.urls'
@@ -55,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pybursa.wsgi.application'
+WSGI_APPLICATION = 'localbtc.wsgi.application'
 
 
 DATABASES = {
@@ -110,6 +111,6 @@ INTERNAL_IPS = ['127.0.0.1']
 LOGIN_REDIRECT_URL = '/'
 
 try:
-    from pybursa.local_settings import *
+    from localbtc.local_settings import *
 except ImportError:
     print('Warning! Local settings are not defined!')
