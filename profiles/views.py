@@ -14,6 +14,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 
 
+class IndexView(generic.TemplateView):
+    pass
+
 class ProfileSignUp(SuccessMessageMixin, generic.CreateView):
     form_class = SignUpForm
     template_name = 'registration/signup.html'

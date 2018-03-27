@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 from django.conf import settings
-from bot.views import IndexView
+from .views import IndexView
 
 
 urlpatterns = [
@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('', IndexView.as_view(), name='index'),
 
-    path('bot/', include('bot.urls')),
+    path('ad_bot/', include('ad_bot.urls')),
     path('profiles/', include('profiles.urls')),
 ]
 

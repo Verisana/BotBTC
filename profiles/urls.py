@@ -1,11 +1,12 @@
 from django.urls import path
 from django.contrib.auth import views
-from .views import ProfileSignUp, ProfilePasswordResetView, activate
+from .views import ProfileSignUp, ProfilePasswordResetView, activate, IndexView 
 from django.views import generic
 
 
 app_name = 'profiles'
 urlpatterns = [
+    path('index/', IndexView.as_view(), name='index'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
 

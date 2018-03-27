@@ -10,7 +10,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'profiles.apps.ProfilesConfig',
-    'bot.apps.BotConfig',
+    'ad_bot.apps.AdBotConfig',
     'django_extensions',
     'debug_toolbar',
     'django.contrib.admin',
@@ -95,6 +95,8 @@ USE_TZ = True
 EMAIL_HOST = '127.0.0.1'
 
 EMAIL_PORT = '1025'
+
+AUTH_USER_MODEL = 'profiles.Profile'
 
 ADMINS = [('admin', 'admin@example.com')]
 
