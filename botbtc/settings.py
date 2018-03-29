@@ -36,7 +36,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'localbtc.urls'
+ROOT_URLCONF = 'botbtc.urls'
 
 TEMPLATES = [
     {
@@ -56,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'localbtc.wsgi.application'
+WSGI_APPLICATION = 'botbtc.wsgi.application'
 
 
 DATABASES = {
@@ -113,6 +113,6 @@ INTERNAL_IPS = ['127.0.0.1']
 LOGIN_REDIRECT_URL = '/'
 
 try:
-    from localbtc.local_settings import *
+    from botbtc.local_settings import *
 except ImportError:
     print('Warning! Local settings are not defined!')
