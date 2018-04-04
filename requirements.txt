@@ -5,3 +5,5 @@ ipython==6.2.1
 psycopg2==2.7.4
 remote-pdb==1.2.0
 requests==2.18.4
+powerline-status==2.6
+celery==4.1.0

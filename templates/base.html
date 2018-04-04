@@ -10,12 +10,12 @@
     <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
 
     <!-- Custom styles for this template -->
+    {% block custom_css %}
     <link href="{% static 'css/starter-template.css' %}" rel="stylesheet">
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% endblock %}
   </head>
-
-  <body>
-
+  <body {% block body_tag %}{% endblock %}>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
@@ -29,7 +29,7 @@
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'profiles:index' %}">User: {{ user.get_username }}</a>
+            <a class="nav-link" href="{% url 'profiles:index' %}">User: {{ user.get_userename }}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'profiles:logout' %}">Logout</a>
@@ -45,11 +45,9 @@
         </ul>
       </div>
     </nav>
-
     <main role="main" class="container">
         {% block content %}{% endblock %}
     </main>
-
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

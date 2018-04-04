@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Bot status{% endblock %}
+
+
+{% block nav_baractive_index %}active{% endblock %}
+
+
+{% block content %}
+    <div class="starter-template">
+    
+        <h1 class="bold reddish"><b>Ad bot testin index</b></h1>
+
+        {% if messages %}
+        <div class="alert alert-success" role="alert">
+            <ul class="messages ">
+                {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+{% endblock %}

@@ -1,15 +1,19 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser 
+from django.contrib.auth.models import AbstractUser
 
 
 class Profile(AbstractUser):
     email_confirmed = models.BooleanField(default=False)
-    api_key = models.ForeignKey('profiles.APIKeyModel', on_delete=models.CASCADE,
-                                blank=True, null=True)
+    api_key = models.ManyToManyField('profiles.APIKey')
 
-class APIKeyModel(models.Model):
+
+class APIKey(models.Model):
     name = models.CharField(max_length=64)
     api_key = models.CharField(max_length=32)
     api_secret = models.CharField(max_length=64)
     username = models.ForeignKey('Profile', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        text = 'Бот: %s, для: %s' % (self.name, self.username.username)
+        return text
