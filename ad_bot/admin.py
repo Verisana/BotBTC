@@ -34,6 +34,7 @@ class AdBotAdmin(admin.ModelAdmin):
 class ActionLogAdmin(admin.ModelAdmin):
     fields = ['action', 'bot_model']
     list_display = ['action', 'bot_model', 'timestamp']
+    list_filter = ('action', 'bot_model__name')
 
 
 admin.site.register(AdBot, AdBotAdmin)
