@@ -1,6 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views
-from .views import ProfileSignUp, ProfilePasswordResetView, activate, IndexView
+from .views import ProfileSignUp, ProfilePasswordResetView, activate
 from django.views import generic
 
 

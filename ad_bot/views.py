@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 class IndexView(LoginRequiredMixin, View):
     http_method_names = ['get', 'post']
+    login_url = '/profiles/login/'
 
     def get(self, request, *args, **kwargs):
         context = {}
