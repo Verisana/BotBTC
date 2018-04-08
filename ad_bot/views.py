@@ -3,9 +3,10 @@ from django.views import generic, View
 from .models import AdBot, ActionLog
 from .tasks import adbot_runner
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class IndexView(View):
+class IndexView(LoginRequiredMixin, View):
     http_method_names = ['get', 'post']
 
     def get(self, request, *args, **kwargs):
@@ -15,7 +16,7 @@ class IndexView(View):
         return render(request, 'ad_bot/index.html', context)
 
 
-class SettingsView(generic.ListView):
+class SettingsView(LoginRequiredMixin, generic.ListView):
     model = AdBot
     template_name = 'ad_bot/settings.html'
 
