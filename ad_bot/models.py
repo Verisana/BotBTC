@@ -1,21 +1,24 @@
 from django.db import models
 from profiles.models import APIKey, Profile
-from django.contrib.postgres.fields import JSONField
 from botbtc import hmac_auth
 import json
 import requests
-
+from decimal import *
 
 class AdBot(models.Model):
     name = models.CharField(max_length=64, unique=True)
     api_keys = models.ForeignKey('profiles.APIKey',
                                  on_delete=models.CASCADE)
     stop_price = models.DecimalField(max_digits=9,
-                                     decimal_places=2)
-    step = models.IntegerField()
-    volume = models.IntegerField(null=True)
+                                     decimal_places=2,
+                                     help_text='Цена для остановки')
+    step = models.IntegerField(help_text='Шаг обновления цены')
+    volume_max = models.IntegerField(null=True,
+                                     help_text='Фильтр по мелким игрокам')
+    volume_min = models.IntegerField(null=True,
+                                     help_text='Фильтр по крупным игрокам')
     switch = models.BooleanField(default=False)
-    frequency = models.DurationField()
+    frequency = models.DurationField(help_text='Частота обновления')
     payment_method = models.CharField(
         max_length=64,
         choices=(('qiwi', 'QIWI'),
@@ -27,10 +30,10 @@ class AdBot(models.Model):
                                                 ('sell-bitcoins-online',
                                                  'ONLINE_BUY')
                                                 ))
-    ad_id = models.IntegerField()
+    ad_id = models.IntegerField(unique=True)
     username = models.ForeignKey('profiles.Profile',
                                  on_delete=models.CASCADE)
-    change_time = models.DateTimeField(auto_now=True)
+    executed_at = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return '%s, %s' % (self.name, self.ad_id)
@@ -64,7 +67,7 @@ class AdBot(models.Model):
                     result['isfirst'] = True
                     break
                 else:
-                    if item['data']['max_amount'] >= self.volume:
+                    if int(item['data']['max_amount']) >= self.volume_max and int(item['data']['min_amount']) <= self.volume_min:
                         result['isfirst'] = False
                         result['enemy'] = i
                         break
@@ -73,49 +76,54 @@ class AdBot(models.Model):
         return result
 
     def _update_price(self, enemy):
-        result = None
         target_price = Decimal()
-        if self.trade_direction == 'ONLINE_SELL':
-            target_price = Decimal(self.all_ads['data']['ad_list'][enemy]['data']['temp_price']
+        if self.trade_direction == 'buy-bitcoins-online':
+            target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
                         - self.step)
-        elif self.trade_direction == 'ONLINE_BUY':
-            target_price = Decimal(self.all_ads['data']['ad_list'][enemy]['data']['temp_price']
+            if target_price < self.stop_price:
+                target_price = self.stop_price
+        elif self.trade_direction == 'sell-bitcoins-online':
+            target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
                         + self.step)
+            if target_price > self.stop_price:
+                target_price = self.stop_price
 
-        if target_price == Decimal(self.my_ad['adata']['ad_list'][0]['data']['temp_price']):
-            result = 'Your ad is up to date'
+        if target_price == Decimal(float(self.my_ad['data']['ad_list'][0]['data']['temp_price'])):
+            message = 'Цена %d объявления %s нормальная. Ничего не меняю' % (target_price, self.name)
+            ActionLog.objects.create(action=message,
+                                     bot_model=self)
         else:
+            message = 'Меняю цену объявления %s на %d' % (self.name, target_price)
+            ActionLog.objects.create(action=message,
+                                     bot_model=self)
             response = self.auth.call('POST',
                                        self.endpoints['post_upd_equat'],
-                                       params={'price-equation': '%s' % (target_price)})
-            if response.status_code == 200:
-                result = 'Your ad has been updated to target_price'
-
-        return result
+                                       params={'price_equation': '%s' % (str(target_price))})
 
     def check_ads(self):
-        import pdb
-        pdb.set_trace()
-
-        result = None
         if self.my_ad['data']['ad_list'][0]['data']['visible']:
             isfirst = self._isfirst()
             if isfirst['isfirst']:
+                message = '%s на первом месте. Проверяю цену' % (self.name)
+                ActionLog.objects.create(action=message,
+                                         bot_model=self)
                 self._update_price(1+isfirst['compensate'])
-                result = 'Already first'
             else:
+                message = '%s перебито. Сейчас обновлю цену' % (self.name)
+                ActionLog.objects.create(action=message,
+                                         bot_model=self)
                 self._update_price(isfirst['enemy'])
-                result = 'Your price has been updated'
-
-        return result
+        else:
+            message = 'Объявление %s выключено. Выключи бота' % (self.name)
+            ActionLog.objects.create(action=message,
+                                     bot_model=self)
 
 
 class ActionLog(models.Model):
     action = models.TextField()
     timestamp = models.DateTimeField(auto_now=True)
-    request_method = models.CharField(max_length=10)
-    request_url = models.URLField()
-    response_data = JSONField()
-    response_code = models.IntegerField()
     bot_model = models.ForeignKey('ad_bot.AdBot',
                                   on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '%d' % (self.id)

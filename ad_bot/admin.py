@@ -3,26 +3,37 @@ from .models import AdBot, ActionLog
 
 
 class AdBotAdmin(admin.ModelAdmin):
-    fields = [
-        'name',
-        'username',
-        'api_keys',
-        'stop_price',
-        'step',
-        'volume',
-        'switch',
-        'frequency',
-        'payment_method',
-        'trade_direction',
-        'ad_id']
-    list_display = ['name', 'ad_id', 'switch']
+    fieldsets = [
+        ('Настройки', {'fields':
+                            ['switch',
+                             'ad_id',
+                             'name',
+                             'api_keys',
+                             'frequency',
+                             'stop_price',
+                             'step',
+                             'volume_max',
+                             'volume_min',
+                            ]}),
+        ('Объявление', {'fields':
+                            ['payment_method',
+                             'trade_direction',
+                             'executed_at',
+                             'username',
+                             ]}),
+    ]
+
+    list_display = ['name',
+                    'ad_id',
+                    'switch',
+                    'stop_price',
+                    'executed_at',
+                    ]
 
 
 class ActionLogAdmin(admin.ModelAdmin):
-    field = ['actions', 'timestamp', 'request_method', 'request_url',
-             'response_data', 'response_code'
-             ]
-    list_display = ['request_method', 'request_url', 'timestamp']
+    fields = ['action', 'bot_model']
+    list_display = ['action', 'bot_model', 'timestamp']
 
 
 admin.site.register(AdBot, AdBotAdmin)

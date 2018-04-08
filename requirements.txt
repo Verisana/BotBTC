@@ -7,3 +7,5 @@ remote-pdb==1.2.0
 requests==2.18.4
 powerline-status==2.6
 celery==4.1.0
+django-celery-results==1.0.1
+flower==0.9.2

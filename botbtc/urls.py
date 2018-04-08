@@ -1,14 +1,14 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, reverse
 from django.conf.urls import include
 from django.conf import settings
-from .views import IndexView
+from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('', IndexView.as_view(), name='index'),
+    path('', RedirectView.as_view(pattern_name='ad_bot:index')),
 
     path('ad_bot/', include('ad_bot.urls')),
     path('profiles/', include('profiles.urls')),

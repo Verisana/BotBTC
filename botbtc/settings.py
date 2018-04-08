@@ -9,6 +9,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
+    'django_celery_results',
     'profiles.apps.ProfilesConfig',
     'ad_bot.apps.AdBotConfig',
     'django_extensions',
@@ -111,6 +112,15 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 INTERNAL_IPS = ['127.0.0.1']
 
 LOGIN_REDIRECT_URL = '/'
+
+CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_BROKER_URL = 'amqp://localhost'
+CELERY_BEAT_SCHEDULE = {
+    'adbot_runner_3sec': {
+        'task': 'ad_bot.tasks.adbot_runner',
+        'schedule': 3.0
+    }
+}
 
 try:
     from botbtc.local_settings import *
