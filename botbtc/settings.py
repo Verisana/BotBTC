@@ -114,7 +114,6 @@ INTERNAL_IPS = ['127.0.0.1']
 LOGIN_REDIRECT_URL = '/'
 
 CELERY_RESULT_BACKEND = 'django-cache'
-CELERY_BROKER_URL = 'amqp://localhost'
 CELERY_BEAT_SCHEDULE = {
     'adbot_runner_3sec': {
         'task': 'ad_bot.tasks.adbot_runner',

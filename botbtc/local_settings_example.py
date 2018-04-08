@@ -20,6 +20,8 @@ EMAIL_PORT = ''
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 
+CELERY_BROKER_URL = 'amqp://localhost'
+
 ADMINS = []
 
 INTERNAL_IPS = ['127.0.0.1']
