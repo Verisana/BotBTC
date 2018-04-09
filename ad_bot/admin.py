@@ -24,6 +24,7 @@ class AdBotAdmin(admin.ModelAdmin):
     ]
 
     list_display = ['name',
+                    'username',
                     'ad_id',
                     'switch',
                     'stop_price',

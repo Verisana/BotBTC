@@ -67,7 +67,7 @@ class AdBot(models.Model):
                     result['isfirst'] = True
                     break
                 else:
-                    if int(item['data']['max_amount']) >= self.volume_max and int(item['data']['min_amount']) <= self.volume_min:
+                    if int(item['data']['max_amount']) >= self.volume_max and self.volume_min >= int(item['data']['min_amount']):
                         result['isfirst'] = False
                         result['enemy'] = i
                         break
