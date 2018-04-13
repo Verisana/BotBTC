@@ -96,9 +96,10 @@ class AdBot(models.Model):
             message = 'Меняю цену объявления %s на %d' % (self.name, target_price)
             ActionLog.objects.create(action=message,
                                      bot_model=self)
+            int_price = int(round(target_price))
             response = self.auth.call('POST',
                                        self.endpoints['post_upd_equat'],
-                                       params={'price_equation': '%s' % (str(target_price))})
+                                       params={'price_equation': '%s' % (str(int_price))})
 
     def check_ads(self):
         if self.my_ad['data']['ad_list'][0]['data']['visible']:
