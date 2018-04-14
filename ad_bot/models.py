@@ -77,18 +77,29 @@ class AdBot(models.Model):
 
     def _update_price(self, enemy):
         target_price = Decimal()
+        int_price = int()
+        str_price = str()
+
         if self.trade_direction == 'buy-bitcoins-online':
             target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
                         - self.step)
-            if target_price < self.stop_price:
-                target_price = self.stop_price
+            int_price = int(round(target_price))
+            while int_price % 100 > 0:
+                int_price -= 1
+            if int_price < self.stop_price:
+                int_price = self.stop_price
+            str_price = str(int_price) + '.00'
         elif self.trade_direction == 'sell-bitcoins-online':
             target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
                         + self.step)
-            if target_price > self.stop_price:
-                target_price = self.stop_price
+            int_price = int(round(target_price))
+            while int_price % 100 > 0:
+                int_price += 1
+            if int_price > self.stop_price:
+                int_price = self.stop_price
+            str_price = str(int_price) + '.00'
 
-        if target_price == Decimal(float(self.my_ad['data']['ad_list'][0]['data']['temp_price'])):
+        if str_price == self.my_ad['data']['ad_list'][0]['data']['temp_price']:
             message = 'Цена %d объявления %s нормальная. Ничего не меняю' % (target_price, self.name)
             ActionLog.objects.create(action=message,
                                      bot_model=self)
@@ -96,8 +107,6 @@ class AdBot(models.Model):
             message = 'Меняю цену объявления %s на %d' % (self.name, target_price)
             ActionLog.objects.create(action=message,
                                      bot_model=self)
-            int_price = int(round(target_price))
-            str_price = str(int_price) + '.00'
             response = self.auth.call('POST',
                                        self.endpoints['post_upd_equat'],
                                        params={'price_equation': '%s' % (str_price)})
@@ -116,9 +125,8 @@ class AdBot(models.Model):
                                          bot_model=self)
                 self._update_price(isfirst['enemy'])
         else:
-            message = 'Объявление %s выключено. Выключи бота' % (self.name)
-            ActionLog.objects.create(action=message,
-                                     bot_model=self)
+            self.switch = False
+            self.save()
 
 
 class ActionLog(models.Model):
