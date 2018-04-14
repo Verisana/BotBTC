@@ -5,6 +5,7 @@ import json
 import requests
 from decimal import *
 
+
 class AdBot(models.Model):
     name = models.CharField(max_length=64, unique=True)
     api_keys = models.ForeignKey('profiles.APIKey',
@@ -67,7 +68,18 @@ class AdBot(models.Model):
                     result['isfirst'] = True
                     break
                 else:
-                    if int(item['data']['max_amount']) >= self.volume_max or self.volume_min >= int(item['data']['min_amount']):
+                    stop_check = True
+                    if self.trade_direction == 'buy-bitcoins-online':
+                        if Decimal(float(item['data']['temp_price'])) < self.stop_price:
+                            stop_check = False
+                    else:
+                        if Decimal(float(item['data']['temp_price'])) > self.stop_price:
+                            stop_check = False
+                    min_check = True
+                    if self.volume_min:
+                        if int(item['data']['min_amount']) > self.volume_min:
+                            min_check = False
+                    if int(item['data']['max_amount']) >= self.volume_max and min_check and stop_check:
                         result['isfirst'] = False
                         result['enemy'] = i
                         break
@@ -81,35 +93,41 @@ class AdBot(models.Model):
         str_price = str()
 
         if self.trade_direction == 'buy-bitcoins-online':
-            target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
-                        - self.step)
+            target_price = Decimal(
+                float(
+                    self.all_ads['data']['ad_list'][enemy]['data']
+                    ['temp_price']) - self.step)
             int_price = int(round(target_price))
             while int_price % 100 > 0:
                 int_price -= 1
-            if int_price < self.stop_price:
-                int_price = self.stop_price
+            if int_price < int(self.stop_price):
+                int_price = int(self.stop_price)
             str_price = str(int_price) + '.00'
         elif self.trade_direction == 'sell-bitcoins-online':
-            target_price = Decimal(float(self.all_ads['data']['ad_list'][enemy]['data']['temp_price'])
-                        + self.step)
+            target_price = Decimal(
+                float(
+                    self.all_ads['data']['ad_list'][enemy]['data']
+                    ['temp_price']) + self.step)
             int_price = int(round(target_price))
             while int_price % 100 > 0:
                 int_price += 1
-            if int_price > self.stop_price:
-                int_price = self.stop_price
+            if int_price > int(self.stop_price):
+                int_price = int(self.stop_price)
             str_price = str(int_price) + '.00'
 
-        if str_price == self.my_ad['data']['ad_list'][0]['data']['temp_price']:
-            message = 'Цена %d объявления %s нормальная. Ничего не меняю' % (target_price, self.name)
+        if int_price == int(Decimal(float(self.my_ad['data']['ad_list'][0]['data']['temp_price']))):
+            message = 'Цена %s объявления %s нормальная. Ничего не меняю' % (
+                str_price, self.name)
             ActionLog.objects.create(action=message,
                                      bot_model=self)
         else:
-            message = 'Меняю цену объявления %s на %d' % (self.name, target_price)
+            message = 'Меняю цену объявления %s на %s' % (
+                self.name, str_price)
             ActionLog.objects.create(action=message,
                                      bot_model=self)
-            response = self.auth.call('POST',
-                                       self.endpoints['post_upd_equat'],
-                                       params={'price_equation': '%s' % (str_price)})
+            response = self.auth.call(
+                'POST', self.endpoints['post_upd_equat'],
+                params={'price_equation': '%s' % (str_price)})
 
     def check_ads(self):
         if self.my_ad['data']['ad_list'][0]['data']['visible']:
