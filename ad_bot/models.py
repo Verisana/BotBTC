@@ -59,27 +59,66 @@ class AdBot(models.Model):
                             self.base_url +
                             self.endpoints['public_ads']).json()
 
+    def _stop_check(self, curr_ad):
+        stop_check = True
+        temp_price = curr_ad['data']['temp_price']
+
+        if self.trade_direction == 'buy-bitcoins-online':
+            if Decimal(float(temp_price)) < self.stop_price:
+                stop_check = False
+        else:
+            if Decimal(float(temp_price)) > self.stop_price:
+                stop_check = False
+        return stop_check
+
+    def _min_check(self, curr_ad):
+        min_check = True
+        min_amount = curr_ad['data']['min_amount']
+
+        if self.volume_min:
+            if int(min_amount) > self.volume_min:
+                min_check = False
+        return min_check
+
+    def _max_check(self, curr_ad):
+        max_check = True
+        max_amount = curr_ad['data']['max_amount']
+
+        if self.volume_max:
+            if int(max_amount) <= self.volume_max:
+                max_check = False
+        return max_check
+
+    def _filter_check(self, curr_ad):
+        result = None
+        if self._max_check(curr_ad) and self._min_check(
+                    curr_ad) and self._stop_check(
+                                curr_ad):
+            result = True
+        else:
+            result = False
+        return result
+
     def _isfirst(self):
         result = {'isfirst': None, 'compensate': 0}
 
         if result['isfirst'] is None:
             for i, item in enumerate(self.all_ads['data']['ad_list']):
                 if item['data']['ad_id'] == self.ad_id and i - result['compensate'] == 0:
-                    result['isfirst'] = True
-                    break
-                else:
-                    stop_check = True
-                    if self.trade_direction == 'buy-bitcoins-online':
-                        if Decimal(float(item['data']['temp_price'])) < self.stop_price:
-                            stop_check = False
+                    ad_below_me = self.all_ads['data']['ad_list'][i+1]
+                    if self._filter_check(ad_below_me):
+                        result['isfirst'] = True
+                        break
                     else:
-                        if Decimal(float(item['data']['temp_price'])) > self.stop_price:
-                            stop_check = False
-                    min_check = True
-                    if self.volume_min:
-                        if int(item['data']['min_amount']) > self.volume_min:
-                            min_check = False
-                    if int(item['data']['max_amount']) >= self.volume_max and min_check and stop_check:
+                        for l, item in enumerate(self.all_ads['data']['ad_list'][i+1:]):
+                            if not self._filter_check(item):
+                                result['compensate'] += 1
+                            break
+                        result['isfirst'] = True
+                        result['compensate'] += 1
+                        break
+                else:
+                    if self._filter_check(item):
                         result['isfirst'] = False
                         result['enemy'] = i
                         break
@@ -115,7 +154,11 @@ class AdBot(models.Model):
                 int_price = int(self.stop_price)
             str_price = str(int_price) + '.00'
 
-        if int_price == int(Decimal(float(self.my_ad['data']['ad_list'][0]['data']['temp_price']))):
+        if int_price == int(
+            Decimal(
+                float(
+                    self.my_ad['data']['ad_list'][0]['data']
+                    ['temp_price']))):
             message = 'Цена %s объявления %s нормальная. Ничего не меняю' % (
                 str_price, self.name)
             ActionLog.objects.create(action=message,
