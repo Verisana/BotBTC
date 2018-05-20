@@ -117,7 +117,7 @@ CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_BEAT_SCHEDULE = {
     'adbot_runner_3sec': {
         'task': 'ad_bot.tasks.adbot_runner',
-        'schedule': 3.0
+        'schedule': 1.0
     }
 }
 
