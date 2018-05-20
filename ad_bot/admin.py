@@ -6,6 +6,7 @@ class AdBotAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Настройки', {'fields':
                             ['switch',
+                             'price_round',
                              'ad_id',
                              'name',
                              'api_keys',

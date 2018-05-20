@@ -35,6 +35,7 @@ class AdBot(models.Model):
     username = models.ForeignKey('profiles.Profile',
                                  on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
+    price_round = models.BooleanField(default=True)
 
     def __str__(self):
         return '%s, %s' % (self.name, self.ad_id)
@@ -137,8 +138,9 @@ class AdBot(models.Model):
                     self.all_ads['data']['ad_list'][enemy]['data']
                     ['temp_price']) - self.step)
             int_price = int(round(target_price))
-            while int_price % 100 > 0:
-                int_price -= 1
+            if self.price_round:
+                while int_price % 100 > 0:
+                    int_price -= 1
             if int_price < int(self.stop_price):
                 int_price = int(self.stop_price)
             str_price = str(int_price) + '.00'
@@ -148,8 +150,9 @@ class AdBot(models.Model):
                     self.all_ads['data']['ad_list'][enemy]['data']
                     ['temp_price']) + self.step)
             int_price = int(round(target_price))
-            while int_price % 100 > 0:
-                int_price += 1
+            if self.price_round:
+                while int_price % 100 > 0:
+                    int_price += 1
             if int_price > int(self.stop_price):
                 int_price = int(self.stop_price)
             str_price = str(int_price) + '.00'
