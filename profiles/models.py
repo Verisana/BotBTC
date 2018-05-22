@@ -15,5 +15,5 @@ class APIKey(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        text = 'Бот: %s, для: %s' % (self.name, self.username.username)
+        text = '%s' % (self.name)
         return text
