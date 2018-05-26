@@ -4,7 +4,6 @@ from .models import AdBot
 from datetime import datetime
 from django.utils import timezone
 
-live_tasks = []
 
 @shared_task
 def run_bot(bot_id):
@@ -13,7 +12,6 @@ def run_bot(bot_id):
     bot_inst.save()
     bot_inst.api_connector_init()
     bot_inst.check_ads()
-    live_tasks.remove(bot_id)
 
 
 @shared_task
@@ -24,11 +22,13 @@ def adbot_runner():
             delta = timezone.now() - i.executed_at
             if delta >= i.frequency:
                 bot_id = i.id
-                if bot_id not in live_tasks:
+                if not i.executing:
+                    i.executing = True
+                    i.save()
                     run_bot.delay(bot_id)
-                    live_tasks.extend(bot_id)
         else:
             bot_id = i.id
-            if bot_id not in live_tasks:
+            if not i.executing:
+                i.executing = True
+                i.save()
                 run_bot.delay(bot_id)
-                live_tasks.extend(bot_id)

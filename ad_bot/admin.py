@@ -20,6 +20,7 @@ class AdBotAdmin(admin.ModelAdmin):
                             ['payment_method',
                              'trade_direction',
                              'executed_at',
+                             'executing',
                              'username',
                              ]}),
     ]

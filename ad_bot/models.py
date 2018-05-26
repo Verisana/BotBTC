@@ -36,6 +36,7 @@ class AdBot(models.Model):
                                  on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
     price_round = models.BooleanField(default=True)
+    executing = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s, %s' % (self.name, self.ad_id)
@@ -188,8 +189,11 @@ class AdBot(models.Model):
                 ActionLog.objects.create(action=message,
                                          bot_model=self)
                 self._update_price(isfirst['enemy'])
+            self.executing = False
+            self.save()
         else:
             self.switch = False
+            self.executing = False
             self.save()
 
 
