@@ -15,6 +15,7 @@ class AdBotAdmin(admin.ModelAdmin):
                              'step',
                              'volume_max',
                              'volume_min',
+                             'page_number',
                             ]}),
         ('Объявление', {'fields':
                             ['payment_method',

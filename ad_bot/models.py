@@ -37,6 +37,7 @@ class AdBot(models.Model):
     executed_at = models.DateTimeField(blank=True, null=True)
     price_round = models.BooleanField(default=True)
     executing = models.BooleanField(default=False)
+    page_number = models.IntegerField(default=1)
 
     def __str__(self):
         return '%s, %s' % (self.name, self.ad_id)
@@ -49,9 +50,10 @@ class AdBot(models.Model):
                 'get_my_ad': '/api/ad-get/%d/' % (self.ad_id),
                 'post_upd_equat': '/api/ad-equation/%d/' %
                                                 (self.ad_id),
-                'public_ads': '/%s/rub/%s/.json' %
+                'public_ads': '/%s/rub/%s/.json?page=%d' %
                                         (self.trade_direction,
-                                         self.payment_method)
+                                         self.payment_method,
+                                         self.page_number)
                         }
         self._get_ads()
 
@@ -129,8 +131,6 @@ class AdBot(models.Model):
                         break
                     else:
                         result['compensate'] += 1
-                        if result['compensate'] >= self.all_ads['data']['ad_count']:
-                            self._get_next_page(self.all_ads['pagination']['next'])
         return result
 
     def _update_price(self, enemy):
@@ -194,8 +194,11 @@ class AdBot(models.Model):
                 ActionLog.objects.create(action=message,
                                          bot_model=self)
                 self._update_price(isfirst['enemy'])
+            self.executing = False
+            self.save()
         else:
             self.switch = False
+            self.executing = False
             self.save()
 
 
