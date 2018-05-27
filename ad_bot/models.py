@@ -61,6 +61,9 @@ class AdBot(models.Model):
                             self.base_url +
                             self.endpoints['public_ads']).json()
 
+    def _get_next_page(self, next_page):
+        self.all_ads = requests.get(next_page).json()
+
     def _stop_check(self, curr_ad):
         stop_check = True
         temp_price = curr_ad['data']['temp_price']
@@ -115,8 +118,7 @@ class AdBot(models.Model):
                         for l, item in enumerate(self.all_ads['data']['ad_list'][i+1:]):
                             if not self._filter_check(item):
                                 result['compensate'] += 1
-                            else:
-                                break
+                            break
                         result['isfirst'] = True
                         result['compensate'] += 1
                         break
@@ -127,6 +129,8 @@ class AdBot(models.Model):
                         break
                     else:
                         result['compensate'] += 1
+                        if result['compensate'] >= self.all_ads['data']['ad_count']:
+                            self._get_next_page(self.all_ads['pagination']['next'])
         return result
 
     def _update_price(self, enemy):

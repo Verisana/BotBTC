@@ -14,11 +14,11 @@ class IndexView(LoginRequiredMixin, View):
         context = {}
         context['adbot'] = AdBot.objects.filter(username=request.user.id).order_by('name')
         context['actionlist'] = ActionLog.objects.all()
-        #b = AdBot.objects.get(ad_id=759473)
+        #b = AdBot.objects.get(ad_id=724665)
         #b.api_connector_init()
-        #import remote_pdb; pdb.set_trace()
         #from remote_pdb import RemotePdb
         #RemotePdb('127.0.0.1', 4444).set_trace()
+        #import pdb; pdb.set_trace()
         #b.check_ads()
         return render(request, 'ad_bot/index.html', context)
 
