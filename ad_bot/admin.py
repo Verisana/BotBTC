@@ -7,6 +7,7 @@ class AdBotAdmin(admin.ModelAdmin):
         ('Настройки', {'fields':
                             ['switch',
                              'price_round',
+                             'executing',
                              'ad_id',
                              'name',
                              'api_keys',
@@ -21,7 +22,6 @@ class AdBotAdmin(admin.ModelAdmin):
                             ['payment_method',
                              'trade_direction',
                              'executed_at',
-                             'executing',
                              'username',
                              ]}),
     ]
