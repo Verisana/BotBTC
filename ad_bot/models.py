@@ -115,7 +115,8 @@ class AdBot(models.Model):
                         for l, item in enumerate(self.all_ads['data']['ad_list'][i+1:]):
                             if not self._filter_check(item):
                                 result['compensate'] += 1
-                            break
+                            else:
+                                break
                         result['isfirst'] = True
                         result['compensate'] += 1
                         break
