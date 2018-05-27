@@ -189,11 +189,8 @@ class AdBot(models.Model):
                 ActionLog.objects.create(action=message,
                                          bot_model=self)
                 self._update_price(isfirst['enemy'])
-            self.executing = False
-            self.save()
         else:
             self.switch = False
-            self.executing = False
             self.save()
 
 

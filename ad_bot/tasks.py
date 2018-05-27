@@ -12,6 +12,8 @@ def run_bot(bot_id):
     bot_inst.save()
     bot_inst.api_connector_init()
     bot_inst.check_ads()
+    bot_inst.executing = False
+    bot_inst.save()
 
 
 @shared_task
