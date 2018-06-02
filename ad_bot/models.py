@@ -182,22 +182,17 @@ class AdBot(models.Model):
                 params={'price_equation': '%s' % (str_price)})
 
     def check_ads(self):
-        if self.my_ad['data']['ad_list'][0]['data']['visible']:
-            isfirst = self._isfirst()
-            if isfirst['isfirst']:
-                message = '%s на первом месте. Проверяю цену' % (self.name)
-                ActionLog.objects.create(action=message,
+        isfirst = self._isfirst()
+        if isfirst['isfirst']:
+            message = '%s на первом месте. Проверяю цену' % (self.name)
+            ActionLog.objects.create(action=message,
                                          bot_model=self)
-                self._update_price(1+isfirst['compensate'])
-            else:
-                message = '%s перебито. Сейчас обновлю цену' % (self.name)
-                ActionLog.objects.create(action=message,
-                                         bot_model=self)
-                self._update_price(isfirst['enemy'])
-            self.executing = False
+            self._update_price(1+isfirst['compensate'])
         else:
-            self.switch = False
-            self.executing = False
+            message = '%s перебито. Сейчас обновлю цену' % (self.name)
+            ActionLog.objects.create(action=message,
+                                        bot_model=self)
+            self._update_price(isfirst['enemy'])
 
 
 class ActionLog(models.Model):
