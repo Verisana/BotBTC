@@ -168,15 +168,16 @@ class AdBot(models.Model):
                 float(
                     self.my_ad['data']['ad_list'][0]['data']
                     ['temp_price']))):
-            message = 'Цена %s объявления %s нормальная. Ничего не меняю' % (
-                str_price, self.name)
-            ActionLog.objects.create(action=message,
-                                     bot_model=self)
+            pass
+#            message = 'Цена %s объявления %s нормальная. Ничего не меняю' % (
+#                str_price, self.name)
+#            ActionLog.objects.create(action=message,
+#                                     bot_model=self)
         else:
-            message = 'Меняю цену объявления %s на %s' % (
-                self.name, str_price)
-            ActionLog.objects.create(action=message,
-                                     bot_model=self)
+#            message = 'Меняю цену объявления %s на %s' % (
+#                self.name, str_price)
+#            ActionLog.objects.create(action=message,
+#                                     bot_model=self)
             response = self.auth.call(
                 'POST', self.endpoints['post_upd_equat'],
                 params={'price_equation': '%s' % (str_price)})
@@ -184,14 +185,14 @@ class AdBot(models.Model):
     def check_ads(self):
         isfirst = self._isfirst()
         if isfirst['isfirst']:
-            message = '%s на первом месте. Проверяю цену' % (self.name)
-            ActionLog.objects.create(action=message,
-                                         bot_model=self)
+#            message = '%s на первом месте. Проверяю цену' % (self.name)
+#            ActionLog.objects.create(action=message,
+#                                         bot_model=self)
             self._update_price(1+isfirst['compensate'])
         else:
-            message = '%s перебито. Сейчас обновлю цену' % (self.name)
-            ActionLog.objects.create(action=message,
-                                        bot_model=self)
+#            message = '%s перебито. Сейчас обновлю цену' % (self.name)
+#            ActionLog.objects.create(action=message,
+#                                        bot_model=self)
             self._update_price(isfirst['enemy'])
 
 

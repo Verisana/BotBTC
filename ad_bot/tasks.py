@@ -9,16 +9,16 @@ from django.utils import timezone
 def run_bot(bot_id):
     bot_inst = AdBot.objects.get(id=bot_id)
     bot_inst.executed_at = timezone.now()
-    bot_inst.save()
+    bot_inst.save(update_fields=['executed_at'])
     bot_inst.api_connector_init()
     if bot_inst.my_ad['data']['ad_list'][0]['data']['visible']:
         bot_inst.check_ads()
         bot_inst.executing = False
-        bot_inst.save()
+        bot_inst.save(update_fields=['executing'])
     else:
         bot_inst.switch = False
         bot_inst.executing = False
-        bot_inst.save()
+        bot_inst.save(update_fields=['switch', 'executing'])
 
 
 @shared_task
@@ -31,11 +31,11 @@ def adbot_runner():
                 bot_id = i.id
                 if not i.executing:
                     i.executing = True
-                    i.save()
+                    i.save(update_fields=['executing'])
                     run_bot.delay(bot_id)
         else:
             bot_id = i.id
             if not i.executing:
                 i.executing = True
-                i.save()
+                i.save(update_fields=['executing'])
                 run_bot.delay(bot_id)
