@@ -33,6 +33,7 @@ class AdBotAdmin(admin.ModelAdmin):
                     'stop_price',
                     'executed_at',
                     ]
+    save_on_top = True
 
 
 class ActionLogAdmin(admin.ModelAdmin):

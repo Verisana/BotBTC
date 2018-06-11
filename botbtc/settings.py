@@ -116,7 +116,7 @@ LOGIN_REDIRECT_URL = '/'
 CELERY_RESULT_BACKEND = 'django-cache'
 
 CELERY_BEAT_SCHEDULE = {
-    'adbot_runner_3sec': {
+    'adbot_runner': {
         'task': 'ad_bot.tasks.adbot_runner',
         'schedule': 1.0
     }
