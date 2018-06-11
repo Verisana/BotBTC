@@ -11,6 +11,7 @@ def run_bot(bot_id):
     bot_inst.executed_at = timezone.now()
     bot_inst.save(update_fields=['executed_at'])
     bot_inst.api_connector_init()
+    bot_inst._get_ads()
     if bot_inst.my_ad['data']['ad_list'][0]['data']['visible']:
         bot_inst.check_ads()
         bot_inst.executing = False

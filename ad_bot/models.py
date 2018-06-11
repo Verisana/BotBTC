@@ -206,7 +206,9 @@ class AdBot(models.Model):
                 params={'price_equation': '%s' % (str_price)})
 
     def check_ads(self):
-        self._get_ads()
+        if not self.my_ad:
+            self._get_ads()
+
         isfirst = self._isfirst()
         if isfirst['isfirst']:
             self._update_price(1+isfirst['compensate'])
