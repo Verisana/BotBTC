@@ -230,7 +230,8 @@ class AdBot(models.Model):
                     if i['contact_id'] == contact_id:
                         self.auth.call(
                             'POST',
-                            self.endpoints['mark_notification']+str(contact_id)+'/')
+                            self.endpoints['mark_notification']+str(i['id'])+'/')
+                        import pdb; pdb.set_trace()
                         break
                 OpenTrades.objects.create(trade_id=contact_id,
                                           username=self.username,
