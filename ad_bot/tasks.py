@@ -1,6 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 from celery import shared_task, task
-from .models import AdBot
+from .models import AdBot, OpenTrades
 from datetime import datetime
 from django.utils import timezone
 
@@ -39,3 +39,20 @@ def adbot_runner():
                 i.executing = True
                 i.save(update_fields=['executing'])
                 run_bot.delay(bot_id)
+
+
+@shared_task
+def message_bot():
+    bot_id = None
+    contact_id = None
+    for i in AdBot.objects.filter(switch=True):
+        if i.enable_autoposting:
+            i.api_connector_init()
+            i.send_first_message()
+
+
+@shared_task
+def opentrades_cleaner():
+    for i in OpenTrades.objects.filter(delete_flag=True):
+        i.api_connector_init()
+        i.send_second_message(i.trade_id)

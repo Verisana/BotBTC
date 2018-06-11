@@ -118,11 +118,19 @@ CELERY_RESULT_BACKEND = 'django-cache'
 CELERY_BEAT_SCHEDULE = {
     'adbot_runner': {
         'task': 'ad_bot.tasks.adbot_runner',
-        'schedule': 1.0
-    }
+        'schedule': 1.0},
+    'message_bot': {
+        'task': 'ad_bot.tasks.message_bot',
+        'schedule': 30.0},
+    'opentrades_cleaner': {
+        'task': 'ad_bot.tasks.opentrades_cleaner',
+        'schedule': 300.0},
 }
 
-CELERY_TASK_ROUTES = {'ad_bot.tasks.run_bot': {'queue': 'run_bot'}}
+CELERY_TASK_ROUTES = {'ad_bot.tasks.run_bot': {'queue': 'run_bot'},
+                      'ad_bot.tasks.message_bot': {'queue': 'run_bot'},
+                      'ad_bot.tasks.opentrades_cleaner': {'queue': 'run_bot'},
+                    }
 
 try:
     from botbtc.local_settings import *

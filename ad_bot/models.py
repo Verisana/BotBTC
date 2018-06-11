@@ -38,6 +38,10 @@ class AdBot(models.Model):
     price_round = models.BooleanField(default=True)
     executing = models.BooleanField(default=False)
     page_number = models.IntegerField(default=1)
+    greetings_text = models.TextField(blank=True, null=True)
+    farewell_text = models.TextField(blank=True, null=True)
+    enable_autoposting = models.BooleanField(default=False)
+
 
     def __str__(self):
         return '%s, %s' % (self.name, self.ad_id)
@@ -53,9 +57,14 @@ class AdBot(models.Model):
                 'public_ads': '/%s/rub/%s/.json?page=%d' %
                                         (self.trade_direction,
                                          self.payment_method,
-                                         self.page_number)
+                                         self.page_number),
+                'open_trades': '/api/dashboard/',
+                'current_trade': '/api/contact_info/',
+                'post_message': '/api/contact_message_post/',
+                'released_trades': '/api/dashboard/released/',
+                'all_notifications': '/api/notifications/',
+                'mark_notification': '/api/notifications/mark_as_read/',
                         }
-        self._get_ads()
 
     def _get_ads(self):
         self.my_ad = self.auth.call('GET', self.endpoints['get_my_ad']).json()
@@ -65,6 +74,22 @@ class AdBot(models.Model):
 
     def _get_next_page(self, next_page):
         self.all_ads = requests.get(next_page).json()
+
+    def _get_open_trades(self):
+        self.opened_trades = self.auth.call(
+                    'GET', self.endpoints['open_trades']).json()
+
+    def _get_released_trades(self):
+        self.released_trades = self.auth.call(
+                    'GET', self.endpoints['released_trades']).json()
+
+    def _get_curr_trade(self, con_id):
+        self.curr_trade = self.auth.call(
+                    'GET', self.endpoints['current_trade']+str(con_id)+'/').json()
+
+    def _get_all_notifications(self):
+        self.all_notif = self.auth.call(
+                    'GET', self.endpoints['all_notifications']).json()
 
     def _stop_check(self, curr_ad):
         stop_check = True
@@ -105,6 +130,12 @@ class AdBot(models.Model):
         else:
             result = False
         return result
+
+    def _is_trade_repeating(self, con_id):
+        for i in OpenTrades.objects.all():
+            if con_id == i.trade_id:
+                return True
+        return False
 
     def _isfirst(self):
         result = {'isfirst': None, 'compensate': 0}
@@ -169,38 +200,74 @@ class AdBot(models.Model):
                     self.my_ad['data']['ad_list'][0]['data']
                     ['temp_price']))):
             pass
-#            message = 'Цена %s объявления %s нормальная. Ничего не меняю' % (
-#                str_price, self.name)
-#            ActionLog.objects.create(action=message,
-#                                     bot_model=self)
         else:
-#            message = 'Меняю цену объявления %s на %s' % (
-#                self.name, str_price)
-#            ActionLog.objects.create(action=message,
-#                                     bot_model=self)
             response = self.auth.call(
                 'POST', self.endpoints['post_upd_equat'],
                 params={'price_equation': '%s' % (str_price)})
 
     def check_ads(self):
+        self._get_ads()
         isfirst = self._isfirst()
         if isfirst['isfirst']:
-#            message = '%s на первом месте. Проверяю цену' % (self.name)
-#            ActionLog.objects.create(action=message,
-#                                         bot_model=self)
             self._update_price(1+isfirst['compensate'])
         else:
-#            message = '%s перебито. Сейчас обновлю цену' % (self.name)
-#            ActionLog.objects.create(action=message,
-#                                        bot_model=self)
             self._update_price(isfirst['enemy'])
 
+    def send_first_message(self):
+        self._get_open_trades()
 
-class ActionLog(models.Model):
-    action = models.TextField()
-    timestamp = models.DateTimeField(auto_now=True)
-    bot_model = models.ForeignKey('ad_bot.AdBot',
+        for i in self.opened_trades['data']['contact_list']:
+            contact_id = i['data']['contact_id']
+            if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id):
+                self.auth.call(
+                    'POST',
+                    self.endpoints['post_message']+str(contact_id)+'/',
+                    params={'msg': self.greetings_text})
+                self._get_all_notifications()
+                for i in self.all_notif['data']:
+                    if i['contact_id'] == contact_id:
+                        self.auth.call(
+                            'POST',
+                            self.endpoints['mark_notification']+str(contact_id)+'/')
+                        break
+                OpenTrades.objects.create(trade_id=contact_id,
+                                          username=self.username,
+                                          delete_flag=True)
+        self._check_closed_deals()
+
+    def _check_closed_deals(self):
+        self._get_released_trades()
+        open_trades_qs = OpenTrades.objects.all()
+
+        for i in self.released_trades['data']['contact_list']:
+            for l in open_trades_qs:
+                if i['data']['contact_id'] == l.trade_id:
+                    self.auth.call(
+                            'POST',
+                            self.endpoints['post_message']+str(contact_id)+'/',
+                            params={'msg': self.farewell_text})
+                    l.delete()
+                    break
+
+    def send_second_message(self, contact_id):
+        self._get_curr_trade(contact_id)
+        to_delete = OpenTrades.objects.get(trade_id=contact_id)
+
+        if self.curr_trade['data']['realeased_at']:
+            self.auth.call(
+                    'POST',
+                    self.endpoints['post_message']+str(contact_id)+'/',
+                    params={'msg': self.farewell_text})
+            to_delete.delete()
+        elif self.curr_trade['data']['disputed_at'] or self.curr_trade['data']['canceled_at']:
+            to_delete.delete()
+
+
+class OpenTrades(models.Model):
+    trade_id = models.IntegerField(null=True)
+    username = models.ForeignKey('profiles.Profile',
                                   on_delete=models.CASCADE)
+    delete_flag = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%d' % (self.id)
+        return '%s' % self.trade_id

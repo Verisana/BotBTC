@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AdBot, ActionLog
+from .models import AdBot, OpenTrades
 
 
 class AdBotAdmin(admin.ModelAdmin):
@@ -17,6 +17,9 @@ class AdBotAdmin(admin.ModelAdmin):
                              'volume_max',
                              'volume_min',
                              'page_number',
+                             'enable_autoposting',
+                             'greetings_text',
+                             'farewell_text',
                             ]}),
         ('Объявление', {'fields':
                             ['payment_method',
@@ -30,17 +33,17 @@ class AdBotAdmin(admin.ModelAdmin):
                     'username',
                     'ad_id',
                     'switch',
+                    'enable_autoposting',
+                    'price_round',
                     'stop_price',
                     'executed_at',
                     ]
     save_on_top = True
 
-
-class ActionLogAdmin(admin.ModelAdmin):
-    fields = ['action', 'bot_model']
-    list_display = ['action', 'bot_model', 'timestamp']
-    list_filter = ('action', 'bot_model__name')
-
+class OpenTradesAdmin(admin.ModelAdmin):
+    fields = ['trade_id', 'username', 'delete_flag']
+    list_display = ['trade_id', 'username', 'delete_flag']
+    save_on_top = True
 
 admin.site.register(AdBot, AdBotAdmin)
-admin.site.register(ActionLog, ActionLogAdmin)
+admin.site.register(OpenTrades, OpenTradesAdmin)

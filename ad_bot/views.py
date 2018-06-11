@@ -1,6 +1,6 @@
 from django.shortcuts import render, reverse, redirect
 from django.views import generic, View
-from .models import AdBot, ActionLog
+from .models import AdBot
 from .tasks import adbot_runner
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.mixins import LoginRequiredMixin
