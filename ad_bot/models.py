@@ -234,7 +234,8 @@ class AdBot(models.Model):
                         break
                 OpenTrades.objects.create(trade_id=contact_id,
                                           username=self.username,
-                                          delete_flag=True)
+                                          delete_flag=True,
+                                          adbot=self)
         self._check_closed_deals()
 
     def _check_closed_deals(self):
