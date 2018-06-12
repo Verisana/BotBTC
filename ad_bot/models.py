@@ -217,7 +217,6 @@ class AdBot(models.Model):
 
     def send_first_message(self):
         self._get_open_trades()
-
         for i in self.opened_trades['data']['contact_list']:
             contact_id = i['data']['contact_id']
             if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id):
@@ -234,7 +233,6 @@ class AdBot(models.Model):
                         break
                 OpenTrades.objects.create(trade_id=contact_id,
                                           username=self.username,
-                                          delete_flag=True,
                                           adbot=self)
         self._check_closed_deals()
 
@@ -269,7 +267,6 @@ class OpenTrades(models.Model):
     trade_id = models.IntegerField(null=True)
     username = models.ForeignKey('profiles.Profile',
                                   on_delete=models.CASCADE)
-    delete_flag = models.BooleanField(default=False)
     adbot = models.ForeignKey('AdBot',
                               on_delete=models.CASCADE)
 

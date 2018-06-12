@@ -54,6 +54,6 @@ def message_bot():
 
 @shared_task
 def opentrades_cleaner():
-    for i in OpenTrades.objects.filter(delete_flag=True):
+    for i in OpenTrades.objects.all():
         i.adbot.api_connector_init()
         i.adbot.send_second_message(i.trade_id)

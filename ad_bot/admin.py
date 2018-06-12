@@ -41,9 +41,8 @@ class AdBotAdmin(admin.ModelAdmin):
     save_on_top = True
 
 class OpenTradesAdmin(admin.ModelAdmin):
-    fields = ['trade_id', 'username', 'adbot', 'delete_flag']
-    list_display = ['trade_id', 'username', 'adbot', 'delete_flag']
-    save_on_top = True
+    fields = ['trade_id', 'username', 'adbot']
+    list_display = ['trade_id', 'username', 'adbot']
 
 admin.site.register(AdBot, AdBotAdmin)
 admin.site.register(OpenTrades, OpenTradesAdmin)
