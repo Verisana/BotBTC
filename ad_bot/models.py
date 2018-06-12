@@ -231,7 +231,6 @@ class AdBot(models.Model):
                         self.auth.call(
                             'POST',
                             self.endpoints['mark_notification']+str(i['id'])+'/')
-                        import pdb; pdb.set_trace()
                         break
                 OpenTrades.objects.create(trade_id=contact_id,
                                           username=self.username,
@@ -255,7 +254,6 @@ class AdBot(models.Model):
     def send_second_message(self, contact_id):
         self._get_curr_trade(contact_id)
         to_delete = OpenTrades.objects.get(trade_id=contact_id)
-
         if self.curr_trade['data']['released_at']:
             self.auth.call(
                     'POST',
@@ -271,6 +269,8 @@ class OpenTrades(models.Model):
     username = models.ForeignKey('profiles.Profile',
                                   on_delete=models.CASCADE)
     delete_flag = models.BooleanField(default=False)
+    adbot = models.ForeignKey('AdBot',
+                              on_delete=models.CASCADE)
 
     def __str__(self):
         return '%s' % self.trade_id
