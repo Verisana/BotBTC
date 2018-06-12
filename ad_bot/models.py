@@ -256,13 +256,13 @@ class AdBot(models.Model):
         self._get_curr_trade(contact_id)
         to_delete = OpenTrades.objects.get(trade_id=contact_id)
 
-        if self.curr_trade['data']['realeased_at']:
+        if self.curr_trade['data']['released_at']:
             self.auth.call(
                     'POST',
                     self.endpoints['post_message']+str(contact_id)+'/',
                     params={'msg': self.farewell_text})
             to_delete.delete()
-        elif self.curr_trade['data']['disputed_at'] or self.curr_trade['data']['canceled_at']:
+        elif self.curr_trade['data']['closed_at']:
             to_delete.delete()
 
 
