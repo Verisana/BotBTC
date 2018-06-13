@@ -41,11 +41,9 @@
     {% if result.get %}
     <div class="container">
       <p><b>Средний курс:</b> {{ result.get.mean_price|floatformat:2 }}</p>
-      <p><b>Cумма в рублях:</b> {{ result.get.sum_rub|floatformat:2 }}</p>
-      <p><b>Сумма в рублях с комиссией Qiwi:</b> {{ result.get.sum_rub_qiwi|floatformat:2 }}</p>
-      <p><b>Общая сумма в битках:</b> {{ result.get.sum_all_btc|floatformat:8 }}</p>
-      <p><b>Сумма в битках без комиссии:</b> {{ result.get.sum_btc|floatformat:8 }}</p>
-      <p><b>Комиссия:</b> {{ result.get.fee_sum|floatformat:8 }}</p>
+      <p><b>Cумма в рублях на Qiwi:</b> {{ result.get.sum_rub|floatformat:2 }}</p>
+      <p><b>Сумма в рублях наличные (-1.8%):</b> {{ result.get.sum_rub_qiwi|floatformat:2 }}</p>
+      <p><b>Cумма в битках:</b> {{ result.get.sum_all_btc|floatformat:8 }}</p>
       <p><b>Количество сделок:</b> {{ result.get.number_trades }}</p>
 
       <br /><div class="row">
