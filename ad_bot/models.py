@@ -72,16 +72,15 @@ class AdBot(models.Model):
                             self.base_url +
                             self.endpoints['public_ads']).json()
 
-    def _get_next_page(self, next_page):
-        self.all_ads = requests.get(next_page).json()
-
     def _get_open_trades(self):
         self.opened_trades = self.auth.call(
                     'GET', self.endpoints['open_trades']).json()
 
-    def _get_released_trades(self):
+    def _get_released_trades(self, next_p=''):
         self.released_trades = self.auth.call(
-                    'GET', self.endpoints['released_trades']).json()
+                    'GET',
+                    self.endpoints['released_trades'],
+                    params=next_p).json()
 
     def _get_curr_trade(self, con_id):
         self.curr_trade = self.auth.call(

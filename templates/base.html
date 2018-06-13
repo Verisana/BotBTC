@@ -19,12 +19,16 @@
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
-          <li class="nav-item {% block nav_baractive_drop %}{% endblock %} dropdown">
+          <li class="nav-item {% block nav_baractive_index %}{% endblock %} dropdown">
 	    <a class="nav-link" href="{% url 'ad_bot:index' %}">Статус</a>
           </li>
-	  <li class="nav-item">
+	  <li class="nav-item {% block nav_baractive_admin %}{% endblock %}">
             <a class="nav-link" href="{% url 'admin:index' %}" target="_blank">Админка</a>
 	  </li>
+	  <li class="nav-item {% block nav_baractive_reports %}{% endblock %}">
+            <a class="nav-link" href="{% url 'ad_bot:reports' %}">Отчеты</a>
+	  </li>
+        </ul>
         </ul>
         <ul class="nav navbar-nav navbar-right">
           {% if user.is_authenticated %}

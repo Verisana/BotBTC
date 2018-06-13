@@ -113,7 +113,7 @@ INTERNAL_IPS = ['127.0.0.1']
 
 LOGIN_REDIRECT_URL = '/'
 
-CELERY_RESULT_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = 'rpc://'
 
 CELERY_BEAT_SCHEDULE = {
     'adbot_runner': {
@@ -130,6 +130,7 @@ CELERY_BEAT_SCHEDULE = {
 CELERY_TASK_ROUTES = {'ad_bot.tasks.run_bot': {'queue': 'run_bot'},
                       'ad_bot.tasks.message_bot': {'queue': 'run_bot'},
                       'ad_bot.tasks.opentrades_cleaner': {'queue': 'run_bot'},
+                      'ad_bot.tasks.calculate_report': {'queue': 'calculate_report'},
                     }
 
 try:
