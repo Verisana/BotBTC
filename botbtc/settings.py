@@ -1,4 +1,5 @@
 import os
+from celery.schedules import crontab
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -125,6 +126,9 @@ CELERY_BEAT_SCHEDULE = {
     'opentrades_cleaner': {
         'task': 'ad_bot.tasks.opentrades_cleaner',
         'schedule': 300.0},
+    'calculate_report': {
+        'task': 'ad_bot.tasks.calculate_report',
+        'schedule': crontab(hour=6)},
 }
 
 CELERY_TASK_ROUTES = {'ad_bot.tasks.run_bot': {'queue': 'run_bot'},

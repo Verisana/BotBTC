@@ -38,6 +38,10 @@
 	<button class="btn btn-success" type="submit"><b>Сформировать отчет</b></button>
       </form><br />
     </div>
+  {% if method == "post" %}
+	<p><b>Много раз не нажимать!</b></p>
+	<a href={% url 'ad_bot:update' %}><button class="btn btn-danger"><b>Обновить данные вручную</b></button></a>
+  {% endif %}
   {% if is_data == "2" %}
     <div class="container">
       <p><b>Средний курс:</b> {{ mean_price|floatformat:2 }}</p>

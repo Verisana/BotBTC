@@ -51,11 +51,10 @@ class ReportsView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         context = {}
         context['adbot'] = AdBot.objects.all()
-
+        context['method'] = 'get'
         return render(request, 'ad_bot/reports.html', context)
 
     def post(self, request, *args, **kwargs):
-        calculate_report.delay()
         context = {}
         headers = ['num',
                    'date',
@@ -74,6 +73,7 @@ class ReportsView(LoginRequiredMixin, View):
         else:
             messages.success(request, 'Выберите даты')
             return render(request, 'ad_bot/reports.html', context)
+        context['method'] = 'post'
         messages.success(request, 'Отчет успешно сформирован')
         context['report_raw'] = ReportData.objects.filter(adbot=bot_id,
                                                           date__range=(date_1, date_2),
@@ -108,3 +108,11 @@ class ReportsView(LoginRequiredMixin, View):
 
         return render(request, 'ad_bot/reports.html', context)
 
+class UpdateData(LoginRequiredMixin, View):
+    http_method = ['get']
+    login_url = '/profiles/login/'
+
+    def get(self, request, *args, **kwargs):
+        calculate_report.delay()
+        messages.success(request, 'Задание на обновление успешно отправлено. Подождите некоторое время')
+        return redirect('ad_bot:reports')

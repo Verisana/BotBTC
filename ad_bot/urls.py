@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import IndexView, SettingsView, SwitchView, ReportsView
+from .views import IndexView, SettingsView, SwitchView, ReportsView, UpdateData
 
 app_name = 'ad_bot'
 urlpatterns = [
@@ -7,4 +7,5 @@ urlpatterns = [
     path('settings/', SettingsView.as_view(), name='settings'),
     path('switch/', SwitchView.as_view(), name='switch'),
     path('reports/', ReportsView.as_view(), name='reports'),
+    path('update/', UpdateData.as_view(), name='update'),
 ]
