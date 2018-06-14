@@ -244,7 +244,7 @@ class AdBot(models.Model):
                 if i['data']['contact_id'] == l.trade_id:
                     self.auth.call(
                             'POST',
-                            self.endpoints['post_message']+str(contact_id)+'/',
+                            self.endpoints['post_message']+str(i['data']['contact_id'])+'/',
                             params={'msg': self.farewell_text})
                     l.delete()
                     break
