@@ -38,15 +38,15 @@
 	<button class="btn btn-success" type="submit"><b>Сформировать отчет</b></button>
       </form><br />
     </div>
-    {% if result.get %}
+  {% if is_data == "2" %}
     <div class="container">
-      <p><b>Средний курс:</b> {{ result.get.mean_price|floatformat:2 }}</p>
-      <p><b>Cумма в рублях:</b> {{ result.get.sum_rub|floatformat:2 }}</p>
-      <p><b>Сумма в рублях с комиссией Qiwi:</b> {{ result.get.sum_rub_qiwi|floatformat:2 }}</p>
-      <p><b>Общая сумма в битках:</b> {{ result.get.sum_all_btc|floatformat:8 }}</p>
-      <p><b>Сумма в битках без комиссии:</b> {{ result.get.sum_btc|floatformat:8 }}</p>
-      <p><b>Комиссия:</b> {{ result.get.fee_sum|floatformat:8 }}</p>
-      <p><b>Количество сделок:</b> {{ result.get.number_trades }}</p>
+      <p><b>Средний курс:</b> {{ mean_price|floatformat:2 }}</p>
+      <p><b>Cумма в рублях:</b> {{ sum_rub|floatformat:2 }}</p>
+      <p><b>Сумма в рублях с комиссией Qiwi:</b> {{ sum_rub_qiwi|floatformat:2 }}</p>
+      <p><b>Общая сумма в битках:</b> {{ sum_all_btc|floatformat:8 }}</p>
+      <p><b>Сумма в битках без комиссии:</b> {{ sum_btc|floatformat:8 }}</p>
+      <p><b>Комиссия:</b> {{ fee_sum|floatformat:8 }}</p>
+      <p><b>Количество сделок:</b> {{ number_trades }}</p>
 
       <br /><div class="row">
         <div class="col border">Номер</div>
@@ -58,9 +58,9 @@
         <div class="col border">Сумма в битках</div>
         <div class="col border">Комиссия в битках</div>
       </div>
-      {% for i in result.get.calc_data %}
+      {% for i in report_raw %}
         <div class="row">
-	  <div class="col border">{{ i.num }}</div>
+	  <div class="col border">{{ forloop.counter }}</div>
 	  <div class="col border">{{ i.date }}</div>
           <div class="col border">{{ i.contact_id }}</div>
           <div class="col border">{{ i.agent }}</div>
@@ -71,6 +71,8 @@
         </div>
       {% endfor %}   
     </div>
+  {% elif is_data == "1" %}
+    <p><b>Нет информации по указанному периоду</b></p>
   {% endif %}
   </div>
 

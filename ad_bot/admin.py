@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AdBot, OpenTrades
+from .models import AdBot, OpenTrades, ReportData
 
 
 class AdBotAdmin(admin.ModelAdmin):
@@ -44,5 +44,28 @@ class OpenTradesAdmin(admin.ModelAdmin):
     fields = ['trade_id', 'username', 'adbot']
     list_display = ['trade_id', 'username', 'adbot']
 
+class ReportDataAdmin(admin.ModelAdmin):
+    fields = ['date',
+              'adbot',
+              'contact_id',
+              'agent',
+              'price',
+              'amount_rub',
+              'amount_btc',
+              'fee_btc',
+              ]
+    list_display = ['date',
+                    'adbot',
+                    'contact_id',
+                    'agent',
+                    'price',
+                    'amount_rub',
+                    'amount_btc',
+                    'fee_btc',
+                ]
+    list_filter = ['adbot', 'date']
+    date_hierarchy = 'date'
+
 admin.site.register(AdBot, AdBotAdmin)
 admin.site.register(OpenTrades, OpenTradesAdmin)
+admin.site.register(ReportData, ReportDataAdmin)

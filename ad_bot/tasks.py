@@ -1,10 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 import dateutil.parser
-import pandas as pd
-import numpy as np
 from urllib.parse import urlparse, parse_qs
 from celery import shared_task, task
-from .models import AdBot, OpenTrades
+from .models import AdBot, OpenTrades, ReportData
 from datetime import datetime
 from django.utils import timezone
 
@@ -62,87 +60,63 @@ def opentrades_cleaner():
         i.adbot.api_connector_init()
         i.adbot.send_second_message(i.trade_id)
 
-@shared_task
-def calculate_report(bot_id, date_1_raw, date_2_raw):
-    result = {}
-    date_1 = dateutil.parser.parse(date_1_raw, ignoretz=True)
-    date_2 = dateutil.parser.parse(date_2_raw, ignoretz=True)
-    bot_inst = AdBot.objects.get(id=bot_id)
-    bot_inst.api_connector_init()
-    bot_inst._get_released_trades()
-    go = True
-    calc_data = []
-    np_data = []
-    headers = ['num',
-               'date',
-               'contact_id',
-               'agent',
-               'price',
-               'amount_rub',
-               'amount_btc',
-               'fee_btc',
-                ]
-    l = 0
-    while go:
-        for i in bot_inst.released_trades['data']['contact_list']:
-            release_date = dateutil.parser.parse(
-                    i['data']['released_at'],
-                    ignoretz=True,
-                )
-            if release_date >= date_1 and release_date <= date_2:
-                trade_dir = i['data']['advertisement']['trade_type']
-                payment = i['data']['advertisement']['payment_method']
-                if bot_inst.get_trade_direction_display() == trade_dir and bot_inst.get_payment_method_display() == payment:
-                    l += 1
-                    date = release_date
-                    amount_rub = float(i['data']['amount'])
-                    amount_btc = float(i['data']['amount_btc'])
-                    fee_btc = float(i['data']['fee_btc'])
-                    price = amount_rub / (amount_btc + fee_btc)
-                    agent = i['data']['buyer']['name']
-                    contact_id = int(i['data']['contact_id'])
-                    temp_dic = {'num': l,
-                                'date': date,
-                                'contact_id': contact_id,
-                                'agent': agent,
-                                'price': price,
-                                'amount_rub': amount_rub,
-                                'amount_btc': amount_btc,
-                                'fee_btc': fee_btc,
-                                }
-                    temp_list = [l,
-                                 date,
-                                 contact_id,
-                                 agent,
-                                 price,
-                                 amount_rub,
-                                 amount_btc,
-                                 fee_btc,
-                                 ]
-                    np_data.append(temp_list)
-                    calc_data.append(temp_dic)
-            elif release_date >= date_1:
-                continue
-            else:
-                go = False
-                break
-        if go:
-            parsed = urlparse(bot_inst.released_trades['pagination']['next'])
-            params = parse_qs(parsed.query)
-            bot_inst._get_released_trades(next_p=params)
 
-    if calc_data:
-        df = pd.DataFrame(np.array(np_data),
-                        index=range(len(np_data)),
-                        columns=headers)
-        result['mean_price'] = round(df['price'].mean(), 2)
-        result['sum_rub'] = df['amount_rub'].sum()
-        result['sum_rub_qiwi'] = result['sum_rub'] - (result['sum_rub']*0.018)
-        result['sum_btc'] = df['amount_btc'].sum()
-        result['fee_sum'] = df['fee_btc'].sum()
-        result['sum_all_btc'] = result['fee_sum'] + result['sum_btc']
-        result['number_trades'] = calc_data[-1]['num']
-        result['calc_data'] = calc_data
-    else:
-        result['nodata'] = 'Нет информации по указанному периоду'
-    return result
+@shared_task
+def calculate_report():
+    stop_date = dateutil.parser.parse('2018-05-01T00:00:00+00:00')
+    for i in AdBot.objects.all():
+        i.api_connector_init()
+        i._get_released_trades()
+        if ReportData.objects.filter(adbot=i.id):
+            last_report_id = ReportData.objects.filter(adbot=i.id).latest('date').contact_id
+        else:
+            last_report_id = 0
+        go = True
+        calc_data = []
+        np_data = []
+        headers = ['num',
+                   'date',
+                   'contact_id',
+                   'agent',
+                   'price',
+                   'amount_rub',
+                   'amount_btc',
+                   'fee_btc',
+                  ]
+        while go:
+            for l in i.released_trades['data']['contact_list']:
+                release_date = dateutil.parser.parse(
+                        l['data']['released_at'],
+
+                        )
+                contact_ref = l['data']['contact_id']
+                if not contact_ref == last_report_id and release_date >= stop_date:
+                    trade_dir = l['data']['advertisement']['trade_type']
+                    payment = l['data']['advertisement']['payment_method']
+                    if i.get_trade_direction_display() == trade_dir and i.get_payment_method_display() == payment:
+                        date = release_date
+                        amount_rub = float(l['data']['amount'])
+                        amount_btc = float(l['data']['amount_btc'])
+                        fee_btc = float(l['data']['fee_btc'])
+                        price = amount_rub / (amount_btc + fee_btc)
+                        if trade_dir == 'ONLINE_SELL':
+                            agent = l['data']['buyer']['name']
+                        else:
+                            agent = l['data']['seller']['name']
+                        contact_id = int(l['data']['contact_id'])
+                        ReportData.objects.create(date=date,
+                                                  adbot=i,
+                                                  contact_id=contact_id,
+                                                  agent=agent,
+                                                  price=price,
+                                                  amount_rub=amount_rub,
+                                                  amount_btc=amount_btc,
+                                                  fee_btc=fee_btc,
+                                                )
+                else:
+                    go = False
+                    break
+            if go:
+                parsed = urlparse(i.released_trades['pagination']['next'])
+                params = parse_qs(parsed.query)
+                i._get_released_trades(next_p=params)

@@ -271,3 +271,26 @@ class OpenTrades(models.Model):
 
     def __str__(self):
         return '%s' % self.trade_id
+
+class ReportData(models.Model):
+    adbot = models.ForeignKey('AdBot',
+                                 on_delete=models.CASCADE,
+                                )
+    date = models.DateTimeField()
+    contact_id = models.IntegerField()
+    agent = models.CharField(max_length=256)
+    price = models.DecimalField(max_digits=9,
+                                decimal_places=2,
+                               )
+    amount_rub = models.DecimalField(max_digits=9,
+                                     decimal_places=2,
+                                    )
+    amount_btc = models.DecimalField(max_digits=9,
+                                     decimal_places=8,
+                                    )
+    fee_btc = models.DecimalField(max_digits=9,
+                                  decimal_places=8,
+                                 )
+
+    def __str__(self):
+        return '%s' % self.contact_id
