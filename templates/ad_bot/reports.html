@@ -44,19 +44,11 @@
   {% endif %}
   {% if is_data == "2" %}
     <div class="container">
-<<<<<<< HEAD
       <p><b>Средний курс:</b> {{ mean_price|floatformat:2 }}</p>
       <p><b>Cумма в рублях на Qiwi:</b> {{ sum_rub|floatformat:2 }}</p>
       <p><b>Сумма в рублях наличные (-1.8%):</b> {{ sum_rub_qiwi|floatformat:2 }}</p>
       <p><b>Cумма в битках:</b> {{ sum_all_btc|floatformat:8 }}</p>
       <p><b>Количество сделок:</b> {{ number_trades }}</p>
-=======
-      <p><b>Средний курс:</b> {{ result.get.mean_price|floatformat:2 }}</p>
-      <p><b>Cумма в рублях на Qiwi:</b> {{ result.get.sum_rub|floatformat:2 }}</p>
-      <p><b>Сумма в рублях наличные (-1.8%):</b> {{ result.get.sum_rub_qiwi|floatformat:2 }}</p>
-      <p><b>Cумма в битках:</b> {{ result.get.sum_all_btc|floatformat:8 }}</p>
-      <p><b>Количество сделок:</b> {{ result.get.number_trades }}</p>
->>>>>>> bf6b0b269f8c37e92a47ed4cdc0d00223d2de2bd
 
       <br /><div class="row">
         <div class="col border">Номер</div>
