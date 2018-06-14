@@ -117,6 +117,6 @@ def calculate_report():
                     go = False
                     break
             if go:
-                parsed = urlparse(i.released_trades['pagination']['next'])
+                parsed = urlparse(l.released_trades['pagination']['next'])
                 params = parse_qs(parsed.query)
                 i._get_released_trades(next_p=params)
