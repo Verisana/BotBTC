@@ -29,8 +29,7 @@ def run_bot(bot_id):
 @shared_task
 def adbot_runner():
     for i in AdBot.objects.filter(switch=True):
-        tech = AdBotTechnical.objects.get_or_create(adbot=i,
-                                                    executing=False)[0]
+        tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
         if tech.executed_at:
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
