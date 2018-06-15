@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import AdBot, OpenTrades, ReportData
+from .models import AdBot, OpenTrades, ReportData, AdBotTechnical
 
 
 class AdBotAdmin(admin.ModelAdmin):
@@ -7,7 +7,6 @@ class AdBotAdmin(admin.ModelAdmin):
         ('Настройки', {'fields':
                             ['switch',
                              'price_round',
-                             'executing',
                              'ad_id',
                              'name',
                              'api_keys',
@@ -24,7 +23,6 @@ class AdBotAdmin(admin.ModelAdmin):
         ('Объявление', {'fields':
                             ['payment_method',
                              'trade_direction',
-                             'executed_at',
                              'username',
                              ]}),
     ]
@@ -36,7 +34,6 @@ class AdBotAdmin(admin.ModelAdmin):
                     'enable_autoposting',
                     'price_round',
                     'stop_price',
-                    'executed_at',
                     ]
     save_on_top = True
 
@@ -66,6 +63,19 @@ class ReportDataAdmin(admin.ModelAdmin):
     list_filter = ['adbot', 'date']
     date_hierarchy = 'date'
 
+
+class AdBotTechnicalAdmin(admin.ModelAdmin):
+    fields = ['adbot',
+              'executed_at',
+              'executing',
+            ]
+    list = ['adbot',
+            'executed_at',
+            'executing',
+        ]
+
+
 admin.site.register(AdBot, AdBotAdmin)
 admin.site.register(OpenTrades, OpenTradesAdmin)
 admin.site.register(ReportData, ReportDataAdmin)
+admin.site.register(AdBotTechnical, AdBotTechnicalAdmin)

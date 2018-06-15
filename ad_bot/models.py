@@ -34,9 +34,7 @@ class AdBot(models.Model):
     ad_id = models.IntegerField(unique=True)
     username = models.ForeignKey('profiles.Profile',
                                  on_delete=models.CASCADE)
-    executed_at = models.DateTimeField(blank=True, null=True)
     price_round = models.BooleanField(default=True)
-    executing = models.BooleanField(default=False)
     page_number = models.IntegerField(default=1)
     greetings_text = models.TextField(blank=True, null=True)
     farewell_text = models.TextField(blank=True, null=True)
@@ -272,6 +270,7 @@ class OpenTrades(models.Model):
     def __str__(self):
         return '%s' % self.trade_id
 
+
 class ReportData(models.Model):
     adbot = models.ForeignKey('AdBot',
                                  on_delete=models.CASCADE,
@@ -294,3 +293,13 @@ class ReportData(models.Model):
 
     def __str__(self):
         return '%s' % self.contact_id
+
+
+class AdBotTechnical(models.Model):
+    adbot = models.ForeignKey('AdBot',
+                              on_delete=models.CASCADE)
+    executed_at = models.DateTimeField(blank=True, null=True)
+    executing = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '%s' % self.adbot
