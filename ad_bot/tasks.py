@@ -52,15 +52,15 @@ def adbot_runner():
                 if tech.message_task_id:
                     task_status = AsyncResult(tech.message_task_id)
                     if task_status.ready:
-                        message_bot_async = message_bot.delay()
+                        message_bot_async = message_bot.delay(i.id)
                         tech.message_task_id = message_bot_async.task_id
                         tech.save(update_fields=['message_task_id'])
                 else:
-                    message_bot_async = message_bot.delay()
+                    message_bot_async = message_bot.delay(i.id)
                     tech.message_task_id = message_bot_async.task_id
                     tech.save(update_fields=['message_task_id'])
         else:
-            message_bot_async = message_bot.delay()
+            message_bot_async = message_bot.delay(i.id)
             tech.message_task_id = message_bot_async.task_id
             tech.save(update_fields=['message_task_id'])
 
