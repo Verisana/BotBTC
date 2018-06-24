@@ -33,7 +33,7 @@ def adbot_runner():
             if delta >= i.frequency:
                 if tech.task_id:
                     task_status = AsyncResult(tech.task_id)
-                    if task_status.ready:
+                    if task_status.ready():
                         run_bot_async = run_bot.delay(i.id)
                         tech.task_id = run_bot_async.task_id
                         tech.save(update_fields=['task_id'])
@@ -51,7 +51,7 @@ def adbot_runner():
             if delta >= tech.message_frequency:
                 if tech.message_task_id:
                     task_status = AsyncResult(tech.message_task_id)
-                    if task_status.ready and i.enable_autoposting:
+                    if task_status.ready() and i.enable_autoposting:
                         message_bot_async = message_bot.delay(i.id)
                         tech.message_task_id = message_bot_async.task_id
                         tech.save(update_fields=['message_task_id'])
