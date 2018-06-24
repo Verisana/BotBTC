@@ -5,8 +5,8 @@ from celery import shared_task, task
 from .models import AdBot, OpenTrades, ReportData, AdBotTechnical
 from datetime import datetime
 from django.utils import timezone
-from celery.task.control import inspect
 from ast import literal_eval as make_tuple
+from celery.result import AsyncResult
 
 
 @shared_task
@@ -26,32 +26,25 @@ def run_bot(bot_id):
 
 @shared_task
 def adbot_runner():
-    tasks = inspect()
-    executing = False
-
     for i in AdBot.objects.filter(switch=True):
         tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
         if tech.executed_at:
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
-                active = tasks.active()
-                reserved = tasks.reserved()
-                for l in active['run_bot@ubuntu-Assanix']:
-                    if l['name'] == 'ad_bot.tasks.run_bot':
-                        if make_tuple(l['args'])[0] == i.id:
-                            executing = True
-                    else:
-                        continue
-                for l in reserved['run_bot@ubuntu-Assanix']:
-                    if l['name'] == 'ad_bot.tasks.run_bot':
-                        if make_tuple(l['args'])[0] == i.id:
-                            executing = True
-                    else:
-                        continue
-                if not executing:
-                    run_bot.delay(i.id)
+                if tech.task_id:
+                    task_status = AsyncResult(tech.task_id)
+                    if task_status.ready:
+                        run_bot_async = run_bot.delay(i.id)
+                        tech.task_id = run_bot_async.task_id
+                        tech.save(update_fields=['task_id'])
+                else:
+                    run_bot_async = run_bot.delay(i.id)
+                    tech.task_id = run_bot_async.task_id
+                    tech.save(update_fields=['task_id'])
         else:
-                run_bot.delay(i.id)
+            run_bot_async = run_bot.delay(i.id)
+            tech.task_id = run_bot_async.task_id
+            tech.save(update_fields=['task_id'])
 
 
 @shared_task

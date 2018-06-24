@@ -114,7 +114,7 @@ INTERNAL_IPS = ['127.0.0.1']
 
 LOGIN_REDIRECT_URL = '/'
 
-#CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_RESULT_BACKEND = 'rpc://'
 
 CELERY_BEAT_SCHEDULE = {
     'adbot_runner': {

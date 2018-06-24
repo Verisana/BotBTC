@@ -299,6 +299,7 @@ class AdBotTechnical(models.Model):
     adbot = models.ForeignKey('AdBot',
                               on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
+    task_id = models.CharField(max_length=64, blank=True, null=True)
 
     def __str__(self):
         return '%s' % self.adbot
