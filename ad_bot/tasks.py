@@ -35,13 +35,19 @@ def adbot_runner():
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
                 active = tasks.active()
-                scheduled = tasks.scheduled()
+                reserved = tasks.reserved()
                 for l in active['run_bot@ubuntu-Assanix']:
-                    if make_tuple(l['args'])[0] == i.id and l['name'] == 'ad_bot.tasks.run_bot':
-                        executing = True
-                for l in scheduled['run)bot@ubuntu-Assanix']:
-                    if make_tuple(l['args'])[0] == i.id and l['name'] == 'ad_bot.tasks.run_bot':
-                        executing = True
+                    if l['name'] == 'ad_bot.tasks.run_bot':
+                        if make_tuple(l['args'])[0] == i.id:
+                            executing = True
+                    else:
+                        continue
+                for l in reserved['run_bot@ubuntu-Assanix']:
+                    if l['name'] == 'ad_bot.tasks.run_bot':
+                        if make_tuple(l['args'])[0] == i.id:
+                            executing = True
+                    else:
+                        continue
                 if not executing:
                     run_bot.delay(i.id)
         else:
@@ -53,7 +59,7 @@ def message_bot():
     bot_id = None
     contact_id = None
     for i in AdBot.objects.filter(switch=True):
-        if i.enable_autoposting:
+       if i.enable_autoposting:
             i.api_connector_init()
             i.send_first_message()
 
