@@ -51,7 +51,7 @@ def adbot_runner():
             if delta >= tech.message_frequency:
                 if tech.message_task_id:
                     task_status = AsyncResult(tech.message_task_id)
-                    if task_status.ready:
+                    if task_status.ready and i.enable_autoposting:
                         message_bot_async = message_bot.delay(i.id)
                         tech.message_task_id = message_bot_async.task_id
                         tech.save(update_fields=['message_task_id'])
@@ -71,10 +71,8 @@ def message_bot(bot_id):
     tech = AdBotTechnical.objects.get(adbot=bot_inst)
     tech.message_executed_at = timezone.now()
     tech.save(update_fields=['message_executed_at'])
-
-    if bot_inst.enable_autoposting:
-        bot_inst.api_connector_init()
-        bot_inst.send_first_message()
+    bot_inst.api_connector_init()
+    bot_inst.send_first_message()
 
 
 @shared_task
