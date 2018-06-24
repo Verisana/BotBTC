@@ -72,7 +72,7 @@ class AdBotTechnicalAdmin(admin.ModelAdmin):
               'message_executed_at',
               'message_frequency',
             ]
-    list = ['adbot',
+    list_display = ['adbot',
             'executed_at',
             'task_id',
             'message_task_id',

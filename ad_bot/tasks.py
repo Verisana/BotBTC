@@ -66,16 +66,15 @@ def adbot_runner():
 
 
 @shared_task
-def message_bot():
-    bot_id = None
-    contact_id = None
-    for i in AdBot.objects.filter(switch=True):
-        tech = AdBotTechnical.objects.get(adbot=i)
-        tech.message_executed_at = timezone.now()
-        tech.save(update_fields=['message_executed_at'])
-        if i.enable_autoposting:
-            i.api_connector_init()
-            i.send_first_message()
+def message_bot(bot_id):
+    bot_inst = AdBot.objects.get(id=bot_id)
+    tech = AdBotTechnical.objects.get(adbot=bot_inst)
+    tech.message_executed_at = timezone.now()
+    tech.save(update_fields=['message_executed_at'])
+
+    if bot_inst.enable_autoposting:
+        bot_inst.api_connector_init()
+        bot_inst.send_first_message()
 
 
 @shared_task
