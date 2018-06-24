@@ -120,9 +120,6 @@ CELERY_BEAT_SCHEDULE = {
     'adbot_runner': {
         'task': 'ad_bot.tasks.adbot_runner',
         'schedule': 1.0},
-    'message_bot': {
-        'task': 'ad_bot.tasks.message_bot',
-        'schedule': 30.0},
     'opentrades_cleaner': {
         'task': 'ad_bot.tasks.opentrades_cleaner',
         'schedule': 300.0},

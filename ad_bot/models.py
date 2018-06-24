@@ -300,6 +300,9 @@ class AdBotTechnical(models.Model):
                               on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
     task_id = models.CharField(max_length=64, blank=True, null=True)
+    message_task_id = models.CharField(max_length=64, blank=True, null=True)
+    message_executed_at = models.DateTimeField(blank=True, null=True)
+    message_frequency = models.DurationField(blank=True, null=True)
 
     def __str__(self):
         return '%s' % self.adbot

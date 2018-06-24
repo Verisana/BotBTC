@@ -68,10 +68,14 @@ class AdBotTechnicalAdmin(admin.ModelAdmin):
     fields = ['adbot',
               'executed_at',
               'task_id',
+              'message_task_id',
+              'message_executed_at',
             ]
     list = ['adbot',
             'executed_at',
             'task_id',
+            'message_task_id',
+            'message_executed_at',
         ]
 
 
