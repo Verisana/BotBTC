@@ -44,7 +44,8 @@ def adbot_runner():
         else:
             run_bot_async = run_bot.delay(i.id)
             tech.task_id = run_bot_async.task_id
-            tech.save(update_fields=['task_id'])
+            tech.executed_at = timezone.now()
+            tech.save(update_fields=['task_id', 'executed_at'])
 
         if tech.message_executed_at:
             delta = timezone.now() - tech.message_executed_at
@@ -62,7 +63,8 @@ def adbot_runner():
         else:
             message_bot_async = message_bot.delay(i.id)
             tech.message_task_id = message_bot_async.task_id
-            tech.save(update_fields=['message_task_id'])
+            tech.message_executed_at = timezone.now()
+            tech.save(update_fields=['message_task_id', 'message_executed_at'])
 
 
 @shared_task
