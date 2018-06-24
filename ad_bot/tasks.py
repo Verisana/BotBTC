@@ -153,7 +153,7 @@ def executing_checker():
         for s in AdBot.objects.filter(switch=True):
             tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
             tech.executing = False
-            tech.save(update_fields='executing')
+            tech.save(update_fields=['executing'])
     if not wait_message_bot:
         for s in AdBot.objects.filter(switch=True):
             tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
