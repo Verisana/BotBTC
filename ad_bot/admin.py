@@ -70,12 +70,14 @@ class AdBotTechnicalAdmin(admin.ModelAdmin):
               'task_id',
               'message_task_id',
               'message_executed_at',
+              'message_frequency',
             ]
     list = ['adbot',
             'executed_at',
             'task_id',
             'message_task_id',
             'message_executed_at',
+            'message_frequency',
         ]
 
 
