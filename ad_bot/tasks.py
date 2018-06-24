@@ -5,8 +5,8 @@ from celery import shared_task, task
 from .models import AdBot, OpenTrades, ReportData, AdBotTechnical
 from datetime import datetime
 from django.utils import timezone
+from celery.task.control import inspect
 from ast import literal_eval as make_tuple
-from celery.result import AsyncResult
 
 
 @shared_task
@@ -23,6 +23,9 @@ def run_bot(bot_id):
         bot_inst.switch = False
         bot_inst.save(update_fields=['switch'])
 
+    tech.executing = False
+    tech.save(update_fields=['executing'])
+
 
 @shared_task
 def adbot_runner():
@@ -31,40 +34,27 @@ def adbot_runner():
         if tech.executed_at:
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
-                if tech.task_id:
-                    task_status = AsyncResult(tech.task_id)
-                    if task_status.ready():
-                        run_bot_async = run_bot.delay(i.id)
-                        tech.task_id = run_bot_async.task_id
-                        tech.save(update_fields=['task_id'])
-                else:
-                    run_bot_async = run_bot.delay(i.id)
-                    tech.task_id = run_bot_async.task_id
-                    tech.save(update_fields=['task_id'])
+                if not tech.executing:
+                    run_bot.delay(i.id)
+                    tech.executing = True
+                    tech.save(update_fields=['executing'])
         else:
-            run_bot_async = run_bot.delay(i.id)
-            tech.task_id = run_bot_async.task_id
-            tech.executed_at = timezone.now()
-            tech.save(update_fields=['task_id', 'executed_at'])
+            run_bot.delay(i.id)
+            tech.executing = True
+            tech.save(update_fields=['executing'])
 
         if tech.message_executed_at:
             delta = timezone.now() - tech.message_executed_at
             if delta >= tech.message_frequency:
-                if tech.message_task_id:
-                    task_status = AsyncResult(tech.message_task_id)
-                    if task_status.ready() and i.enable_autoposting:
-                        message_bot_async = message_bot.delay(i.id)
-                        tech.message_task_id = message_bot_async.task_id
-                        tech.save(update_fields=['message_task_id'])
-                else:
-                    message_bot_async = message_bot.delay(i.id)
-                    tech.message_task_id = message_bot_async.task_id
-                    tech.save(update_fields=['message_task_id'])
+                if not tech.message_executing:
+                    message_bot.delay(i.id)
+                    tech.message_executing = True
+                    tech.save(update_fields=['message_executing'])
+
         else:
-            message_bot_async = message_bot.delay(i.id)
-            tech.message_task_id = message_bot_async.task_id
-            tech.message_executed_at = timezone.now()
-            tech.save(update_fields=['message_task_id', 'message_executed_at'])
+            message_bot.delay(i.id)
+            tech.message_executing = True
+            tech.save(update_fields=['message_executing'])
 
 
 @shared_task
@@ -75,6 +65,8 @@ def message_bot(bot_id):
     tech.save(update_fields=['message_executed_at'])
     bot_inst.api_connector_init()
     bot_inst.send_first_message()
+    tech.message_executing = False
+    tech.save(update_fields=['message_executing'])
 
 
 @shared_task
@@ -143,3 +135,27 @@ def calculate_report():
                 parsed = urlparse(l.released_trades['pagination']['next'])
                 params = parse_qs(parsed.query)
                 i._get_released_trades(next_p=params)
+
+@shared_task
+def executing_checker():
+    insp = inspect()
+    reser = insp.reserved()
+    wait_run_bot = False
+    wait_message_bot = False
+
+    for i in reser['run_bot@ubuntu-Assanix']:
+        if i['name'] == 'ad_bot.tasks.run_bot':
+            wait_run_bot = True
+        elif i['name'] == 'ad_bot.tasks.message_bot':
+            wait_message_bot = True
+
+    if not wait_run_bot:
+        for s in AdBot.objects.filter(switch=True):
+            tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
+            tech.executing = False
+            tech.save(update_fields='executing')
+    if not wait_message_bot:
+        for s in AdBot.objects.filter(switch=True):
+            tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
+            tech.message_executing = False
+            tech.save(update_fields=['message_executing'])

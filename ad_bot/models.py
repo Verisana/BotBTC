@@ -299,8 +299,8 @@ class AdBotTechnical(models.Model):
     adbot = models.ForeignKey('AdBot',
                               on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
-    task_id = models.CharField(max_length=64, blank=True, null=True)
-    message_task_id = models.CharField(max_length=64, blank=True, null=True)
+    executing = models.BooleanField(default=False)
+    message_executing = models.BooleanField(default=False)
     message_executed_at = models.DateTimeField(blank=True, null=True)
     message_frequency = models.DurationField(default='30', blank=True, null=True)
 

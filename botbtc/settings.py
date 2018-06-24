@@ -126,12 +126,16 @@ CELERY_BEAT_SCHEDULE = {
     'calculate_report': {
         'task': 'ad_bot.tasks.calculate_report',
         'schedule': crontab(hour='*/6')},
+    'executing_checker': {
+        'task': 'ad_bot.tasks.executing_checker',
+        'schedule': 30.0},
 }
 
 CELERY_TASK_ROUTES = {'ad_bot.tasks.run_bot': {'queue': 'run_bot'},
                       'ad_bot.tasks.message_bot': {'queue': 'run_bot'},
                       'ad_bot.tasks.opentrades_cleaner': {'queue': 'run_bot'},
                       'ad_bot.tasks.calculate_report': {'queue': 'calculate_report'},
+                      'ad_bot.tasks.executing_checker': {'queue': 'executing_checker'},
                     }
 
 try:
