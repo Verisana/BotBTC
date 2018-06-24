@@ -67,11 +67,9 @@ class ReportDataAdmin(admin.ModelAdmin):
 class AdBotTechnicalAdmin(admin.ModelAdmin):
     fields = ['adbot',
               'executed_at',
-              'executing',
             ]
     list = ['adbot',
             'executed_at',
-            'executing',
         ]
 
 

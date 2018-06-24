@@ -299,7 +299,6 @@ class AdBotTechnical(models.Model):
     adbot = models.ForeignKey('AdBot',
                               on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
-    executing = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s' % self.adbot

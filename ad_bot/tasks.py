@@ -5,6 +5,8 @@ from celery import shared_task, task
 from .models import AdBot, OpenTrades, ReportData, AdBotTechnical
 from datetime import datetime
 from django.utils import timezone
+from celery.task.control import inspect
+from ast import literal_eval as make_tuple
 
 
 @shared_task
@@ -17,30 +19,32 @@ def run_bot(bot_id):
     bot_inst._get_ads()
     if bot_inst.my_ad['data']['ad_list'][0]['data']['visible']:
         bot_inst.check_ads()
-        tech.executing = False
-        tech.save(update_fields=['executing'])
     else:
         bot_inst.switch = False
-        tech.executing = False
-        tech.save(update_fields=['executing'])
         bot_inst.save(update_fields=['switch'])
 
 
 @shared_task
 def adbot_runner():
+    tasks = inspect()
+    executing = False
+
     for i in AdBot.objects.filter(switch=True):
         tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
         if tech.executed_at:
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
-                if not tech.executing:
-                    tech.executing = True
-                    tech.save(update_fields=['executing'])
+                active = tasks.active()
+                scheduled = tasks.scheduled()
+                for l in active['run_bot@ubuntu-Assanix']:
+                    if make_tuple(l['args'])[0] == i.id and l['name'] == 'ad_bot.tasks.run_bot':
+                        executing = True
+                for l in scheduled['run)bot@ubuntu-Assanix']:
+                    if make_tuple(l['args'])[0] == i.id and l['name'] == 'ad_bot.tasks.run_bot':
+                        executing = True
+                if not executing:
                     run_bot.delay(i.id)
         else:
-            if not tech.executing:
-                tech.executing = True
-                tech.save(update_fields=['executing'])
                 run_bot.delay(i.id)
 
 
