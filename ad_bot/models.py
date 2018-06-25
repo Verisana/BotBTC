@@ -295,7 +295,7 @@ class ReportData(models.Model):
         return '%s' % self.contact_id
 
 
-class AdBotTechnical(models.Model):
+"""class AdBotTechnical(models.Model):
     adbot = models.ForeignKey('AdBot',
                               on_delete=models.CASCADE)
     executed_at = models.DateTimeField(blank=True, null=True)
@@ -305,4 +305,4 @@ class AdBotTechnical(models.Model):
     message_frequency = models.DurationField(default='30', blank=True, null=True) 
 
     def __str__(self):
-        return '%s' % self.adbot
+        return '%s' % self.adbot """
