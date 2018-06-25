@@ -35,26 +35,27 @@ def adbot_runner():
             delta = timezone.now() - tech.executed_at
             if delta >= i.frequency:
                 if not tech.executing:
-                    run_bot.delay(i.id)
                     tech.executing = True
                     tech.save(update_fields=['executing'])
+                    run_bot.delay(i.id)
         else:
-            run_bot.delay(i.id)
             tech.executing = True
             tech.save(update_fields=['executing'])
+            run_bot.delay(i.id)
 
         if tech.message_executed_at:
             delta = timezone.now() - tech.message_executed_at
             if delta >= tech.message_frequency:
                 if not tech.message_executing:
-                    message_bot.delay(i.id)
                     tech.message_executing = True
                     tech.save(update_fields=['message_executing'])
+                    message_bot.delay(i.id)
 
         else:
-            message_bot.delay(i.id)
             tech.message_executing = True
             tech.save(update_fields=['message_executing'])
+            message_bot.delay(i.id)
+
 
 
 @shared_task
