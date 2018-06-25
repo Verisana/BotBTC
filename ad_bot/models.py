@@ -103,6 +103,8 @@ class AdBot(models.Model):
     def _min_check(self, curr_ad):
         min_check = True
         min_amount = curr_ad['data']['min_amount']
+        if min_amount == None:
+            min_amount = 0
 
         if self.volume_min:
             if int(min_amount) > self.volume_min:
