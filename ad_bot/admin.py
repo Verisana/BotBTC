@@ -64,7 +64,7 @@ class ReportDataAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
 
 
-"""class AdBotTechnicalAdmin(admin.ModelAdmin):
+class AdBotTechnicalAdmin(admin.ModelAdmin):
     fields = ['adbot',
               'executed_at',
               'executing',
@@ -78,10 +78,10 @@ class ReportDataAdmin(admin.ModelAdmin):
             'message_executing',
             'message_executed_at',
             'message_frequency',
-        ] """
+        ]
 
 
 admin.site.register(AdBot, AdBotAdmin)
 admin.site.register(OpenTrades, OpenTradesAdmin)
 admin.site.register(ReportData, ReportDataAdmin)
-#admin.site.register(AdBotTechnical, AdBotTechnicalAdmin)
+admin.site.register(AdBotTechnical, AdBotTechnicalAdmin)
