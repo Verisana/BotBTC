@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import dateutil.parser
 from urllib.parse import urlparse, parse_qs
 from celery import shared_task, task
-from .models import AdBot, OpenTrades, ReportData#, AdBotTechnical
+from .models import AdBot, OpenTrades, ReportData, AdBotTechnical
 from datetime import datetime
 from django.utils import timezone
 from celery.task.control import inspect
