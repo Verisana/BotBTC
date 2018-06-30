@@ -23,9 +23,19 @@ def run_bot(bot_id):
         bot_inst.switch = False
         bot_inst.save(update_fields=['switch'])
 
-    tech.executing = False
-    tech.save(update_fields=['executing'])
+    insp = inspect()
+    reser = insp.reserved()
+    wait_run_bot = False
 
+
+    if 'run_bot@ubuntu-Assanix' in reser.keys():
+        for i in reser['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.run_bot':
+                wait_run_bot = True
+
+    if not wait_run_bot:
+        tech.executing = False
+        tech.save(update_fields=['executing'])
 
 @shared_task
 def adbot_runner():
@@ -66,8 +76,19 @@ def message_bot(bot_id):
     tech.save(update_fields=['message_executed_at'])
     bot_inst.api_connector_init()
     bot_inst.send_first_message()
-    tech.message_executing = False
-    tech.save(update_fields=['message_executing'])
+
+    insp = inspect()
+    reser = insp.reserved()
+    wait_message_bot = False
+
+    if 'run_bot@ubuntu-Assanix' in reser.keys():
+        for i in reser['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.message_bot':
+                wait_message_bot = True
+
+    if not wait_message_bot:
+        tech.message_executing = False
+        tech.save(update_fields=['message_executing'])
 
 
 @shared_task
