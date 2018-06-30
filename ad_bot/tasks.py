@@ -144,11 +144,12 @@ def executing_checker():
     wait_run_bot = False
     wait_message_bot = False
 
-    for i in reser['run_bot@ubuntu-Assanix']:
-        if i['name'] == 'ad_bot.tasks.run_bot':
-            wait_run_bot = True
-        elif i['name'] == 'ad_bot.tasks.message_bot':
-            wait_message_bot = True
+    if 'run_bot@ubuntu-Assanix' in reser.keys():
+        for i in reser['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.run_bot':
+                wait_run_bot = True
+            elif i['name'] == 'ad_bot.tasks.message_bot':
+                wait_message_bot = True
 
     if not wait_run_bot:
         for s in AdBot.objects.filter(switch=True):
