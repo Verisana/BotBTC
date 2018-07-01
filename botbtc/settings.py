@@ -127,7 +127,7 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': 300.0},
     'calculate_report': {
         'task': 'ad_bot.tasks.calculate_report',
-        'schedule': crontab(hour='*/6')},
+        'schedule': crontab(minute='00', hour='12')},
     'executing_checker': {
         'task': 'ad_bot.tasks.executing_checker',
         'schedule': 30.0},

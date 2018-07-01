@@ -112,7 +112,7 @@ class UpdateData(LoginRequiredMixin, View):
     http_method = ['get']
     login_url = '/profiles/login/'
 
-    def get(self, request, *args, **kwargs):
+"""    def get(self, request, *args, **kwargs):
         calculate_report.delay()
         messages.success(request, 'Задание на обновление успешно отправлено. Подождите некоторое время')
-        return redirect('ad_bot:reports')
+        return redirect('ad_bot:reports') """
