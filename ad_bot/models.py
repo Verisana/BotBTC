@@ -24,7 +24,8 @@ class AdBot(models.Model):
         max_length=64,
         choices=(('qiwi', 'QIWI'),
                  ('cash-deposit', 'CASH_DEPOSIT'),
-                 ('transfers-with-specific-bank', 'SPECIFIC_BANK')))
+                 ('transfers-with-specific-bank', 'SPECIFIC_BANK'),
+                 ('yandex-money', 'YANDEX_MONEY')))
     trade_direction = models.CharField(max_length=64,
                                        choices=(('buy-bitcoins-online',
                                                  'ONLINE_SELL'),
