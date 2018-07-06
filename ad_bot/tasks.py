@@ -27,10 +27,9 @@ def run_bot(bot_id):
     reser = insp.reserved()
     wait_run_bot = False
 
-
     if 'run_bot@ubuntu-Assanix' in reser.keys():
         for i in reser['run_bot@ubuntu-Assanix']:
-            if i['name'] == 'ad_bot.tasks.run_bot':
+            if i['name'] == 'ad_bot.tasks.run_bot' and bot_inst.id == make_tuple(i['args'])[0]:
                 wait_run_bot = True
 
     if not wait_run_bot:
@@ -49,9 +48,8 @@ def adbot_runner():
                     tech.save(update_fields=['executing'])
                     run_bot.delay(i.id)
         else:
-            tech.executing = True
-            tech.save(update_fields=['executing'])
-            run_bot.delay(i.id)
+            tech.executed_at = timezone.now()
+            tech.save(update_fields=['executed_at'])
 
         if tech.message_executed_at:
             delta = timezone.now() - tech.message_executed_at
@@ -62,10 +60,8 @@ def adbot_runner():
                     message_bot.delay(i.id)
 
         else:
-            tech.message_executing = True
-            tech.save(update_fields=['message_executing'])
-            message_bot.delay(i.id)
-
+            tech.message_executed_at = timezone.now()
+            tech.save(update_fields=['message_executed_at'])
 
 
 @shared_task
@@ -83,7 +79,7 @@ def message_bot(bot_id):
 
     if 'run_bot@ubuntu-Assanix' in reser.keys():
         for i in reser['run_bot@ubuntu-Assanix']:
-            if i['name'] == 'ad_bot.tasks.message_bot':
+            if i['name'] == 'ad_bot.tasks.message_bot' and bot_inst.id == make_tuple(i['args'])[0]:
                 wait_message_bot = True
 
     if not wait_message_bot:
@@ -167,10 +163,10 @@ def executing_checker():
         wait_run_bot = False
         wait_message_bot = False
 
-        for i in reser['run_bot@ubuntu-Assanix']:
-            if i['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(reser['run_bot@ubuntu-Assanix'][0]['args'])[0]:
+        for l in reser['run_bot@ubuntu-Assanix']:
+            if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
                 wait_run_bot = True
-            elif i['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(reser['run_bot@ubuntu-Assanix'][0]['args'])[0]:
+            elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(reser[l['args'])[0]:
                 wait_message_bot = True
 
         if not wait_run_bot:
