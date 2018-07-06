@@ -25,12 +25,22 @@ def run_bot(bot_id):
 
     insp = inspect()
     reser = insp.reserved()
+    active = insp.active()
     wait_run_bot = False
 
     if not reser == None and 'run_bot@ubuntu-Assanix' in reser.keys():
         for i in reser['run_bot@ubuntu-Assanix']:
             if i['name'] == 'ad_bot.tasks.run_bot' and bot_inst.id == make_tuple(i['args'])[0]:
                 wait_run_bot = True
+
+    counter = 0
+    if not active == None and 'run_bot@ubuntu-Assanix' in active.keys():
+        for i in active['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.run_bot' and bot_inst.id == make_tuple(i['args'])[0]:
+                if counter > 0:
+                    wait_run_bot = True
+                counter += 1
+
 
     if not wait_run_bot:
         tech.executing = False
@@ -75,12 +85,22 @@ def message_bot(bot_id):
 
     insp = inspect()
     reser = insp.reserved()
+    active = insp.active()
     wait_message_bot = False
 
     if not reser == None and 'run_bot@ubuntu-Assanix' in reser.keys():
         for i in reser['run_bot@ubuntu-Assanix']:
             if i['name'] == 'ad_bot.tasks.message_bot' and bot_inst.id == make_tuple(i['args'])[0]:
                 wait_message_bot = True
+
+    counter = 0
+    if not active == None and 'run_bot@ubuntu-Assanix' in active.keys():
+        for i in active['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.message_bot' and bot_inst.id == make_tuple(i['args'])[0]:
+                if counter > 0:
+                    wait_run_bot = True
+                counter += 1
+
 
     if not wait_message_bot:
         tech.message_executing = False
