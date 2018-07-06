@@ -158,12 +158,19 @@ def calculate_report():
 def executing_checker():
     insp = inspect()
     reser = insp.reserved()
+    active = insp.active()
 
     for i in AdBot.objects.all():
         wait_run_bot = False
         wait_message_bot = False
 
         for l in reser['run_bot@ubuntu-Assanix']:
+            if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
+                wait_run_bot = True
+            elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
+                wait_message_bot = True
+
+        for l in active['run_bot@ubuntu-Assanix']:
             if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
                 wait_run_bot = True
             elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
