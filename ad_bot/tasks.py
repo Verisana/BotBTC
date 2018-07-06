@@ -171,6 +171,7 @@ def executing_checker():
                 elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
                     wait_message_bot = True
 
+        if not active == None and 'run_bot@ubuntu-Assanix' in active.keys():
             for l in active['run_bot@ubuntu-Assanix']:
                 if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
                     wait_run_bot = True
