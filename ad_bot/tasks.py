@@ -54,7 +54,7 @@ def adbot_runner():
         if tech.message_executed_at:
             delta = timezone.now() - tech.message_executed_at
             if delta >= tech.message_frequency:
-                if not tech.message_executing:
+                if not tech.message_executing and i.enable_autoposting:
                     tech.message_executing = True
                     tech.save(update_fields=['message_executing'])
                     message_bot.delay(i.id)
