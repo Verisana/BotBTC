@@ -27,9 +27,10 @@ def run_bot(bot_id):
     reser = insp.reserved()
     wait_run_bot = False
 
-    for i in reser['run_bot@ubuntu-Assanix']:
-        if i['name'] == 'ad_bot.tasks.run_bot' and bot_inst.id == make_tuple(i['args'])[0]:
-            wait_run_bot = True
+    if not reser == None:
+        for i in reser['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.run_bot' and bot_inst.id == make_tuple(i['args'])[0]:
+                wait_run_bot = True
 
     if not wait_run_bot:
         tech.executing = False
@@ -76,9 +77,10 @@ def message_bot(bot_id):
     reser = insp.reserved()
     wait_message_bot = False
 
-    for i in reser['run_bot@ubuntu-Assanix']:
-        if i['name'] == 'ad_bot.tasks.message_bot' and bot_inst.id == make_tuple(i['args'])[0]:
-            wait_message_bot = True
+    if not reser == None:
+        for i in reser['run_bot@ubuntu-Assanix']:
+            if i['name'] == 'ad_bot.tasks.message_bot' and bot_inst.id == make_tuple(i['args'])[0]:
+                wait_message_bot = True
 
     if not wait_message_bot:
         tech.message_executing = False
