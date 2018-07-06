@@ -164,17 +164,18 @@ def executing_checker():
         wait_run_bot = False
         wait_message_bot = False
 
-        for l in reser['run_bot@ubuntu-Assanix']:
-            if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
-                wait_run_bot = True
-            elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
-                wait_message_bot = True
+        if not reser == None and 'run_bot@ubuntu-Assanix' in reser.keys():
+            for l in reser['run_bot@ubuntu-Assanix']:
+                if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
+                    wait_run_bot = True
+                elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
+                    wait_message_bot = True
 
-        for l in active['run_bot@ubuntu-Assanix']:
-            if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
-                wait_run_bot = True
-            elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
-                wait_message_bot = True
+            for l in active['run_bot@ubuntu-Assanix']:
+                if l['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(l['args'])[0]:
+                    wait_run_bot = True
+                elif l['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(l['args'])[0]:
+                    wait_message_bot = True
 
         if not wait_run_bot:
             tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
