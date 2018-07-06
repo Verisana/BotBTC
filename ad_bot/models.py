@@ -25,7 +25,7 @@ class AdBot(models.Model):
         choices=(('qiwi', 'QIWI'),
                  ('cash-deposit', 'CASH_DEPOSIT'),
                  ('transfers-with-specific-bank', 'SPECIFIC_BANK'),
-                 ('yandex-money', 'YANDEX_MONEY')))
+                 ('yandex-money', 'YANDEXMONEY')))
     trade_direction = models.CharField(max_length=64,
                                        choices=(('buy-bitcoins-online',
                                                  'ONLINE_SELL'),
@@ -219,7 +219,10 @@ class AdBot(models.Model):
         self._get_open_trades()
         for i in self.opened_trades['data']['contact_list']:
             contact_id = i['data']['contact_id']
-            if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id):
+            pay_method = i['data']['advertisement']['payment_method']
+            ad_pay_method = self.get_trade_direction_display()
+
+            if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id) and pay_method == ad_pay_method:
                 self.auth.call(
                     'POST',
                     self.endpoints['post_message']+str(contact_id)+'/',
