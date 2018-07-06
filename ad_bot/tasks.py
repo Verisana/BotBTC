@@ -162,23 +162,23 @@ def calculate_report():
 def executing_checker():
     insp = inspect()
     reser = insp.reserved()
-    wait_run_bot = False
-    wait_message_bot = False
 
-    if 'run_bot@ubuntu-Assanix' in reser.keys():
+    for i in AdBot.objects.all():
+        wait_run_bot = False
+        wait_message_bot = False
+
         for i in reser['run_bot@ubuntu-Assanix']:
-            if i['name'] == 'ad_bot.tasks.run_bot':
+            if i['name'] == 'ad_bot.tasks.run_bot' and i.id == make_tuple(reser['run_bot@ubuntu-Assanix'][0]['args'])[0]:
                 wait_run_bot = True
-            elif i['name'] == 'ad_bot.tasks.message_bot':
+            elif i['name'] == 'ad_bot.tasks.message_bot' and i.id == make_tuple(reser['run_bot@ubuntu-Assanix'][0]['args'])[0]:
                 wait_message_bot = True
 
-    if not wait_run_bot:
-        for s in AdBot.objects.filter(switch=True):
-            tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
+        if not wait_run_bot:
+            tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
             tech.executing = False
             tech.save(update_fields=['executing'])
-    if not wait_message_bot:
-        for s in AdBot.objects.filter(switch=True):
-            tech = AdBotTechnical.objects.get_or_create(adbot=s)[0]
+
+        if not wait_message_bot:
+            tech = AdBotTechnical.objects.get_or_create(adbot=i)[0]
             tech.message_executing = False
             tech.save(update_fields=['message_executing'])
