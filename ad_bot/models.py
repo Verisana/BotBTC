@@ -220,7 +220,7 @@ class AdBot(models.Model):
         for i in self.opened_trades['data']['contact_list']:
             contact_id = i['data']['contact_id']
             pay_method = i['data']['advertisement']['payment_method']
-            ad_pay_method = self.get_trade_direction_display()
+            ad_pay_method = self.get_payment_method_display()
 
             if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id) and pay_method == ad_pay_method:
                 self.auth.call(
