@@ -219,11 +219,8 @@ class AdBot(models.Model):
         self._get_open_trades()
         for i in self.opened_trades['data']['contact_list']:
             contact_id = i['data']['contact_id']
-            pay_method = i['data']['advertisement']['payment_method']
-            in_tr_dir = i['data']['advertisement']['trade_type']
-            ad_pay_method = self.get_payment_method_display()
-            tr_dir = self.get_trade_direction_display()
-            if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id) and pay_method == ad_pay_method and in_tr_dir == tr_dir:
+            ad_id = i['data']['advertisement']['id']
+            if not i['data']['disputed_at'] and not self._is_trade_repeating(contact_id) and ad_id == self.ad_id:
                 self.auth.call(
                     'POST',
                     self.endpoints['post_message']+str(contact_id)+'/',
