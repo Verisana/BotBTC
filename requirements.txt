@@ -13,3 +13,4 @@ psycopg2-binary==2.7.5
 python-dateutil==2.7.3
 numpy==1.14.5
 pandas==0.23.1
+statprof==0.1.2
