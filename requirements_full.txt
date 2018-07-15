@@ -34,7 +34,6 @@ requests==2.19.1
 simplegeneric==0.8.1
 six==1.11.0
 sqlparse==0.2.4
-statprof==0.1.2
 tornado==5.0.2
 traitlets==4.3.2
 urllib3==1.23
