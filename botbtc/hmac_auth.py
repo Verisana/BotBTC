@@ -5,7 +5,7 @@ import time
 from urllib.parse import urlparse
 
 
-def hmac(hmac_key, hmac_secret, server='https://localbitcoins.net'):
+def hmac(hmac_key, hmac_secret, server='https://localbitcoins.com'):
     conn = Connection()
     conn._set_hmac(server, hmac_key, hmac_secret)
     return conn

@@ -48,7 +48,7 @@ class AdBot(models.Model):
     def api_connector_init(self):
         self.auth = hmac_auth.hmac(self.api_keys.api_key,
                                    self.api_keys.api_secret)
-        self.base_url = 'https://localbitcoins.net'
+        self.base_url = 'https://localbitcoins.com'
         self.endpoints = {
                 'get_my_ad': '/api/ad-get/%d/' % (self.ad_id),
                 'post_upd_equat': '/api/ad-equation/%d/' %
